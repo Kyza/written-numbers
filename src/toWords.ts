@@ -1,0 +1,77 @@
+import hundreds from "./hundreds";
+import illions from "./illions";
+import ones from "./ones";
+import tens from "./tens";
+import thousands from "./thousands";
+import trimStart from "./trimStart";
+
+export default function toWords(num: bigint | number | string): string {
+	// Ensure we're working with a string.
+	if (typeof num === "bigint" || typeof num === "number")
+		num = num.toString();
+
+	let words: string = "";
+
+	let decimal = "";
+	// Handle negative numbers.
+	if (num.startsWith("-")) {
+		words += "negative ";
+		num = num.slice(1);
+	}
+	// Split the decimal off to handle later.
+	if (num.includes(".")) {
+		const [a, b] = num.split(".");
+		num = a;
+		decimal = b;
+	}
+
+	// Remove any leading zeros.
+	num = trimStart(num, "0");
+
+	const chunks: string[] = [];
+	let chunkI = 0;
+	chunkLoop: for (let i = num.length; i >= 0; i -= 3, chunkI++) {
+		const chunk = num.slice(Math.max(i - 3, 0), i);
+
+		// If the chunk is empty, skip it.
+		// It should be safe to assume that the chunk will have a length of 3.
+		if (chunk === "000") continue;
+
+		switch (chunkI) {
+			case 0:
+				switch (chunk.length) {
+					case 1:
+						chunks.push(ones(chunk));
+						continue chunkLoop;
+					case 2:
+						chunks.push(tens(chunk));
+						continue chunkLoop;
+					default:
+						chunks.push(hundreds(chunk));
+						break;
+				}
+				break;
+			case 1:
+				chunks.push(thousands(chunk));
+				break;
+			default:
+				chunks.push(illions(chunk, chunkI - 1));
+				break;
+		}
+	}
+	words += chunks.reverse().join(" ");
+
+	// Wordify the decimal digits.
+	if (decimal.length > 0) {
+		let decimalWords = "";
+		for (let i = decimal.length - 1; i >= 0; i--) {
+			const digit = decimal[i];
+			// Ignore any trailing zeros.
+			if (decimalWords.length === 0 && digit === "0") continue;
+			decimalWords = ` ${ones(digit)}${decimalWords}`;
+		}
+		words += ` point${decimalWords}`;
+	}
+
+	return words;
+}
