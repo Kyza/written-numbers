@@ -1,4 +1,4 @@
-import endChunkArray from "./endChunkArray";
+import endChunkArray from "./util/endChunkArray";
 
 export default /*
 	Gets the parts of an illion from the illion's number.

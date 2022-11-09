@@ -3,7 +3,7 @@ import illions from "./illions";
 import ones from "./ones";
 import tens from "./tens";
 import thousands from "./thousands";
-import trimStart from "./trimStart";
+import trimStart from "./util/trimStart";
 
 export default function toWords(num: bigint | number | string): string {
 	// Ensure we're working with a string.
