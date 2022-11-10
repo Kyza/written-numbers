@@ -47,7 +47,7 @@ export default function toWords(num) {
             case 1:
                 chunks.push(thousands(chunk));
                 break;
-            case 2:
+            default:
                 chunks.push(illions(chunk, chunkI - 1));
                 break;
         }
