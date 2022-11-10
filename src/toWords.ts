@@ -10,6 +10,8 @@ export default function toWords(num: bigint | number | string): string {
 	if (typeof num === "bigint" || typeof num === "number")
 		num = num.toString();
 
+	console.log(num);
+
 	let words: string = "";
 
 	let decimal = "";
@@ -34,8 +36,7 @@ export default function toWords(num: bigint | number | string): string {
 		const chunk = num.slice(Math.max(i - 3, 0), i);
 
 		// If the chunk is empty, skip it.
-		// It should be safe to assume that the chunk will have a length of 3.
-		if (chunk === "000") continue;
+		if (chunk.padStart(3, "0") === "000") continue;
 
 		switch (chunkI) {
 			case 0:
@@ -54,7 +55,7 @@ export default function toWords(num: bigint | number | string): string {
 			case 1:
 				chunks.push(thousands(chunk));
 				break;
-			default:
+			case 2:
 				chunks.push(illions(chunk, chunkI - 1));
 				break;
 		}
