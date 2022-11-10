@@ -14,4 +14,4 @@ function randomString(
 	return result;
 }
 
-console.log(toWords(randomString(100, "0123456789")));
+console.log(toWords(437826.75382965473892654837));

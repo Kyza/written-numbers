@@ -7,8 +7,17 @@ import trimStart from "./util/trimStart";
 
 export default function toWords(num: bigint | number | string): string {
 	// Ensure we're working with a string.
-	if (typeof num === "bigint" || typeof num === "number")
-		num = num.toString();
+	// Use BigInt only if it's a whole number.
+	if (typeof num === "number" && Number.isInteger(num)) num = BigInt(num);
+	// Try to convert to a string without errors to the best of my ability.
+	else if (typeof num === "number")
+		num = num.toLocaleString("fullwide", {
+			useGrouping: false,
+			maximumSignificantDigits: 21,
+		});
+
+	// BigInt is safe.
+	if (typeof num === "bigint") num = num.toString();
 
 	let words: string = "";
 
