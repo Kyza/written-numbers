@@ -8,7 +8,6 @@ export default function toWords(num) {
     // Ensure we're working with a string.
     if (typeof num === "bigint" || typeof num === "number")
         num = num.toString();
-    console.log(num);
     let words = "";
     let decimal = "";
     // Handle negative numbers.
