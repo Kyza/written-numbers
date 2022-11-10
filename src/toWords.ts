@@ -10,8 +10,6 @@ export default function toWords(num: bigint | number | string): string {
 	if (typeof num === "bigint" || typeof num === "number")
 		num = num.toString();
 
-	console.log(num);
-
 	let words: string = "";
 
 	let decimal = "";
