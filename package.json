@@ -1,11 +1,13 @@
 {
 	"name": "written-numbers",
-	"version": "0.1.0",
+	"version": "0.1.2",
 	"description": "",
-	"main": "./src/index.ts",
+	"main": "./dist/index.ts",
+	"type": "module",
 	"scripts": {
 		"test": "tsx ./test.ts",
-		"test:watch": "tsx --watch ./test.ts"
+		"test:watch": "tsx --watch ./test.ts",
+		"build": "tsc"
 	},
 	"devDependencies": {
 		"@types/node": "^18.11.9",
