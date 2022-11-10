@@ -1,9 +1,6 @@
 import { TH_LIST } from "./constants";
-import toWords from "./toWords";
 
-export default function toOrdinal(num: bigint | number | string): string {
-	let words = toWords(num);
-
+export default function toOrdinal(words: string): string {
 	// Special cases.
 	if (words.endsWith("one")) return replaceLast(words, "one", "first");
 	if (words.endsWith("two")) return replaceLast(words, "two", "second");

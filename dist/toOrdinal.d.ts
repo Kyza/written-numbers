@@ -1,1 +1,1 @@
-export default function toOrdinal(num: bigint | number | string): string;
+export default function toOrdinal(words: string): string;
