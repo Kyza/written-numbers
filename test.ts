@@ -1,4 +1,4 @@
-import { toWords } from "./src";
+import { toOrdinal } from "./src";
 
 function randomString(
 	length: number,
@@ -14,4 +14,4 @@ function randomString(
 	return result;
 }
 
-console.log(toWords(437826.75382965473892654837));
+console.log(toOrdinal("twenty"));

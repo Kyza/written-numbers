@@ -1,4 +1,4 @@
-import { TH_LIST } from "./constants";
+import replaceLast from "./util/replaceLast";
 export default function toOrdinal(words) {
     // Special cases.
     if (words.endsWith("one"))
@@ -15,8 +15,8 @@ export default function toOrdinal(words) {
         return replaceLast(words, "nine", "ninth");
     if (words.endsWith("twelve"))
         return replaceLast(words, "twelve", "twelfth");
-    // Just in case check to make sure it's a valid word to ordinalify.
-    if (TH_LIST.some((ending) => words.endsWith(ending)))
-        return `${words}th`;
-    return words;
+    // Handle twenty through ninety.
+    if (words.endsWith("y"))
+        return replaceLast(words, "y", "ieth");
+    return `${words}th`;
 }
