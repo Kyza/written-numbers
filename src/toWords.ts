@@ -39,33 +39,37 @@ export default function toWords(num: bigint | number | string): string {
 	num = trimStart(num, "0").padStart(1, "0");
 
 	const chunks: string[] = [];
-	let chunkI = 0;
-	chunkLoop: for (let i = num.length; i >= 0; i -= 3, chunkI++) {
-		const chunk = num.slice(Math.max(i - 3, 0), i);
+	if (num === "0") {
+		chunks.push(ones(0));
+	} else {
+		let chunkI = 0;
+		chunkLoop: for (let i = num.length; i >= 0; i -= 3, chunkI++) {
+			const chunk = num.slice(Math.max(i - 3, 0), i);
 
-		// If the chunk is empty and it's not the first chunk, skip it.
-		if (chunkI > 0 && chunk.padStart(3, "0") === "000") continue;
+			// If the chunk is empty and it's not the first chunk, skip it.
+			if (chunk.padStart(3, "0") === "000") continue;
 
-		switch (chunkI) {
-			case 0:
-				switch (chunk.length) {
-					case 1:
-						chunks.push(ones(chunk));
-						continue chunkLoop;
-					case 2:
-						chunks.push(tens(chunk));
-						continue chunkLoop;
-					default:
-						chunks.push(hundreds(chunk));
-						break;
-				}
-				break;
-			case 1:
-				chunks.push(thousands(chunk));
-				break;
-			default:
-				chunks.push(illions(chunk, chunkI - 1));
-				break;
+			switch (chunkI) {
+				case 0:
+					switch (chunk.length) {
+						case 1:
+							chunks.push(ones(chunk));
+							continue chunkLoop;
+						case 2:
+							chunks.push(tens(chunk));
+							continue chunkLoop;
+						default:
+							chunks.push(hundreds(chunk));
+							break;
+					}
+					break;
+				case 1:
+					chunks.push(thousands(chunk));
+					break;
+				default:
+					chunks.push(illions(chunk, chunkI - 1));
+					break;
+			}
 		}
 	}
 	words += chunks.reverse().join(" ");

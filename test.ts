@@ -14,4 +14,4 @@ function randomString(
 
 import { toWords } from "./src";
 
-console.log(toWords("0"));
+console.log(toWords("10000000000000"));
