@@ -35,15 +35,16 @@ export default function toWords(num: bigint | number | string): string {
 	}
 
 	// Remove any leading zeros.
-	num = trimStart(num, "0");
+	// Make sure to keep at least one decimal.
+	num = trimStart(num, "0").padStart(1, "0");
 
 	const chunks: string[] = [];
 	let chunkI = 0;
 	chunkLoop: for (let i = num.length; i >= 0; i -= 3, chunkI++) {
 		const chunk = num.slice(Math.max(i - 3, 0), i);
 
-		// If the chunk is empty, skip it.
-		if (chunk.padStart(3, "0") === "000") continue;
+		// If the chunk is empty and it's not the first chunk, skip it.
+		if (chunkI > 0 && chunk.padStart(3, "0") === "000") continue;
 
 		switch (chunkI) {
 			case 0:

@@ -1,5 +1,3 @@
-import { toOrdinal } from "./src";
-
 function randomString(
 	length: number,
 	characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
@@ -14,4 +12,6 @@ function randomString(
 	return result;
 }
 
-console.log(toOrdinal("twenty"));
+import { toWords } from "./src";
+
+console.log(toWords("0"));
