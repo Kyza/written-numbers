@@ -4,7 +4,10 @@ import ones from "./ones";
 import tens from "./tens";
 import thousands from "./thousands";
 import trimStart from "./util/trimStart";
-export default function toWords(num) {
+export default function toWords(num, options) {
+    options ??= {};
+    options.and ??= false;
+    options.commas ??= false;
     // Ensure we're working with a string.
     // Use BigInt only if it's a whole number.
     if (typeof num === "number" && Number.isInteger(num))
@@ -55,20 +58,20 @@ export default function toWords(num) {
                             chunks.push(tens(chunk));
                             continue chunkLoop;
                         default:
-                            chunks.push(hundreds(chunk));
+                            chunks.push(hundreds(chunk, options));
                             break;
                     }
                     break;
                 case 1:
-                    chunks.push(thousands(chunk));
+                    chunks.push(thousands(chunk, options));
                     break;
                 default:
-                    chunks.push(illions(chunk, chunkI - 1));
+                    chunks.push(illions(chunk, chunkI - 1, options));
                     break;
             }
         }
     }
-    words += chunks.reverse().join(" ");
+    words += chunks.reverse().join(options.commas ? ", " : " ");
     // Wordify the decimal digits.
     if (decimal.length > 0) {
         let decimalWords = "";

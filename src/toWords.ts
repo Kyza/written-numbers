@@ -5,7 +5,16 @@ import tens from "./tens";
 import thousands from "./thousands";
 import trimStart from "./util/trimStart";
 
-export default function toWords(num: bigint | number | string): string {
+export type WordOptions = { and: boolean; commas: boolean };
+
+export default function toWords(
+	num: bigint | number | string,
+	options?: Partial<WordOptions>
+): string {
+	options ??= {};
+	options.and ??= false;
+	options.commas ??= false;
+
 	// Ensure we're working with a string.
 	// Use BigInt only if it's a whole number.
 	if (typeof num === "number" && Number.isInteger(num)) num = BigInt(num);
@@ -59,20 +68,22 @@ export default function toWords(num: bigint | number | string): string {
 							chunks.push(tens(chunk));
 							continue chunkLoop;
 						default:
-							chunks.push(hundreds(chunk));
+							chunks.push(hundreds(chunk, options as WordOptions));
 							break;
 					}
 					break;
 				case 1:
-					chunks.push(thousands(chunk));
+					chunks.push(thousands(chunk, options as WordOptions));
 					break;
 				default:
-					chunks.push(illions(chunk, chunkI - 1));
+					chunks.push(
+						illions(chunk, chunkI - 1, options as WordOptions)
+					);
 					break;
 			}
 		}
 	}
-	words += chunks.reverse().join(" ");
+	words += chunks.reverse().join(options.commas ? ", " : " ");
 
 	// Wordify the decimal digits.
 	if (decimal.length > 0) {

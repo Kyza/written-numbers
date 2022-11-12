@@ -1,6 +1,6 @@
 import ones from "./ones";
 import tens from "./tens";
-export default function hundreds(digits) {
+export default function hundreds(digits, options) {
     const hundredsDigit = digits[0];
     const tensDigit = digits[1];
     const onesDigit = digits[2];
@@ -13,5 +13,5 @@ export default function hundreds(digits) {
         return result;
     if (tensDigit === "0")
         return `${result} ${ones(onesDigit)}`;
-    return `${result} ${tens(`${tensDigit}${onesDigit}`)}`;
+    return `${result}${options.and ? " and" : ""} ${tens(`${tensDigit}${onesDigit}`)}`;
 }
