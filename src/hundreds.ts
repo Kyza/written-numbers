@@ -13,7 +13,7 @@ export default function hundreds(
 	if (hundredsDigit === "0" && tensDigit === "0") return ones(onesDigit);
 	if (hundredsDigit === "0") return tens(`${tensDigit}${onesDigit}`);
 
-	let result = `${ones(hundredsDigit)}hundred`;
+	let result = `${ones(hundredsDigit)} hundred`;
 
 	if (tensDigit === "0" && onesDigit === "0") return result;
 	if (tensDigit === "0")
