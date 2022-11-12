@@ -15,18 +15,32 @@ export default function toWords(
 	options.and ??= false;
 	options.commas ??= false;
 
+	let cameFromNumber = false;
+
 	// Ensure we're working with a string.
 	// Use BigInt only if it's a whole number.
-	if (typeof num === "number" && Number.isInteger(num)) num = BigInt(num);
+	if (typeof num === "number" && Number.isInteger(num)) {
+		cameFromNumber = true;
+		num = BigInt(num);
+	}
 	// Try to convert to a string without errors to the best of my ability.
-	else if (typeof num === "number")
+	else if (typeof num === "number") {
+		cameFromNumber = true;
 		num = num.toLocaleString("fullwide", {
 			useGrouping: false,
 			maximumSignificantDigits: 21,
 		});
+	}
 
 	// BigInt is safe.
-	if (typeof num === "bigint") num = num.toString();
+	if (typeof num === "bigint") {
+		cameFromNumber = true;
+		num = num.toString();
+	}
+
+	// Ensure it's a valid number if it was passed as a raw string.
+	if (!cameFromNumber && !/^\d+(\.\d+)?/.test(num))
+		throw new Error("Invalid number format.");
 
 	let words: string = "";
 
