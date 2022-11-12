@@ -8,10 +8,10 @@ export default function hundreds(digits, options) {
         return ones(onesDigit);
     if (hundredsDigit === "0")
         return tens(`${tensDigit}${onesDigit}`);
-    let result = `${ones(hundredsDigit)}${options.and ? " and" : ""} hundred`;
+    let result = `${ones(hundredsDigit)}hundred`;
     if (tensDigit === "0" && onesDigit === "0")
         return result;
     if (tensDigit === "0")
-        return `${result} ${ones(onesDigit)}`;
+        return `${result}${options.and ? " and" : ""} ${ones(onesDigit)}`;
     return `${result}${options.and ? " and" : ""} ${tens(`${tensDigit}${onesDigit}`)}`;
 }
