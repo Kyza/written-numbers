@@ -39,7 +39,7 @@ export default function toWords(
 	}
 
 	// Ensure it's a valid number if it was passed as a raw string.
-	if (!cameFromNumber && !/^\d+(\.\d+)?/.test(num))
+	if (!cameFromNumber && !/^-?\d+(\.\d+)?/.test(num))
 		throw new Error("Invalid number format.");
 
 	let words: string = "";
