@@ -29,7 +29,7 @@ export const TENS = [
 	"ten",
 	"twenty",
 	"thirty",
-	"fourty",
+	"forty",
 	"fifty",
 	"sixty",
 	"seventy",
