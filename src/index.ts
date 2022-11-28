@@ -1,5 +1,5 @@
 export { default as combineIllionParts } from "./combineIllionParts";
-export * as consants from "./constants";
+export * as constants from "./constants";
 export { default as getIllionPartNumbers } from "./getIllionPartNumbers";
 export { default as getIllionParts } from "./getIllionParts";
 export { default as hundreds } from "./hundreds";
