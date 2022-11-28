@@ -12,6 +12,8 @@ function randomString(
 	return result;
 }
 
-import { toWords } from "./src";
+import { illionWord, toWords } from "./src";
 
 console.log(toWords("9999999999", { and: true, commas: true }));
+
+console.log(illionWord(-123n));
