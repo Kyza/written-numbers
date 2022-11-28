@@ -6,7 +6,7 @@ export default /*
 	Billion is 2.
 	Nonillion is 9.
 	And so on...
-*/ function getIllionPartNumbers(illion: number): string[] {
+*/ function getIllionPartNumbers(illion: number | bigint): string[] {
 	// Split the number into chunks of 3 and reverse them.
 	// Then reverse the order of those chunks.
 	return endChunkArray(illion.toString().split(""), 3)
