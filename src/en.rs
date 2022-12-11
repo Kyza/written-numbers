@@ -1,4 +1,5 @@
 use phf::phf_map;
+use regex::internal::Char;
 
 use crate::{util::map_has_value, LanguageOptions, ToWordsReturn};
 
@@ -112,10 +113,7 @@ pub fn thousands_word(
 }
 
 pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
-	let mut words = String::from("");
-	let mut number = number;
-
-	println!("{}", number);
+	let mut words = String::new();
 
 	match number {
 		"0" => return Ok(ones_word('0')),
@@ -124,29 +122,27 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 	}
 
 	// Split off the decimals from the actual number.
-	let mut decimals = "";
+	let mut decimals = String::new();
+	let mut whole = String::new();
 	if let Some(decimal_point_index) = number.find(".") {
-		decimals = &number[decimal_point_index + 1..];
-		number = &number[..decimal_point_index];
+		decimals = number[decimal_point_index + 1..].to_string();
+		whole = number[..decimal_point_index].to_string();
 	}
 
 	let mut index = number.len();
 	let mut iteration = 0;
 	while index > 0 {
-		let mut chunk =
-			number[index.checked_sub(3).unwrap_or(0)..index].to_string();
+		let chunk = ('0', '0', '0');
+		// let mut chunk = whole[index.checked_sub(3).unwrap_or(0)..index].to_string();
 
-		// Ensure the chunk is always three long.
-		while chunk.len() < 3 {
-			chunk.insert(0, '0');
-		}
+		let ones = *whole.as_bytes().get(index).unwrap_or() as char;
 
-		if chunk == "000" {
-			// Skip empty chunks.
+		// Skip empty chunks.
+		if chunk == ('0', '0', '0') {
+			index = index.checked_sub(3).unwrap_or(0);
+			iteration += 1;
 			continue;
 		}
-
-		let chunk = chunk.as_bytes();
 
 		words.insert_str(
 			0,
@@ -154,24 +150,11 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 				"{}{} ",
 				&match iteration {
 					// If it's the first iteration, handle the hundreds.
-					0 => hundreds_word(
-						(
-							chunk[0] as char,
-							chunk[1] as char,
-							chunk[2] as char,
-						),
-						options,
-					),
-					1 => thousands_word(
-						(
-							chunk[0] as char,
-							chunk[1] as char,
-							chunk[2] as char,
-						),
-						options,
-					),
+					0 => hundreds_word(chunk, options),
+					1 => thousands_word(chunk, options),
 					_ => "".to_string(),
 				},
+				// Join with a comma if that option is enabled.
 				if map_has_value(
 					options,
 					&"commas".to_string(),
@@ -189,7 +172,7 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 	}
 
 	// Remove the extra space and comma.
-	words = words[..words.len() - 2].to_string();
+	words.truncate(words.len() - 2);
 
 	// TODO: 0.8009 => zero point eight thousand nine ten-thousandths
 	if decimals.len() > 0 {

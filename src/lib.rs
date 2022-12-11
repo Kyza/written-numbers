@@ -68,7 +68,7 @@ impl WrittenNumbers<'_> {
 		// Preparse the number.
 		let is_negative = number.starts_with("-");
 		// TODO: Find a way to do this without converting between &str and String repeatedly.
-		let number = number.clone().replace(",", "");
+		let number = number.replace(",", "");
 		let mut number = number.as_str();
 		if is_negative {
 			number = &number[1..];
