@@ -1,6 +1,9 @@
 use phf::phf_map;
 
-use crate::{util::map_has_value, LanguageOptions, ToWordsReturn};
+use crate::{
+	util::{chunk_number, map_has_value},
+	LanguageOptions, ToWordsReturn,
+};
 
 static ONES: phf::Map<char, &'static str> = phf_map! {
 		'0' => "zero",
@@ -129,24 +132,18 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 	} else {
 		whole = number.to_string();
 	}
-	let whole = whole.chars().collect::<Vec<_>>();
 
-	let mut index = number.len();
+	let chunks = chunk_number(whole, 3);
+
 	let mut iteration = 0;
-	while index > 0 {
-		let chunk = (
-			if index > 2 { whole[index - 3] } else { '0' },
-			if index > 1 { whole[index - 2] } else { '0' },
-			whole[index - 1],
-		);
+	for chunk in chunks.iter().rev() {
+		let chunk = (chunk[0], chunk[1], chunk[2]);
 
 		println!("{chunk:?}");
 
-		index = index.saturating_sub(3);
-		iteration += 1;
-
 		// Skip empty chunks.
 		if chunk == ('0', '0', '0') {
+			iteration += 1;
 			continue;
 		}
 
@@ -172,6 +169,8 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 				}
 			),
 		);
+
+		iteration += 1;
 	}
 
 	// Remove the extra space and comma.
