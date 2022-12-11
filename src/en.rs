@@ -1,48 +1,43 @@
-use std::collections::HashMap;
-
-use lazy_static::lazy_static;
-use maplit::hashmap;
+use phf::phf_map;
 
 use crate::{util::map_has_value, LanguageOptions, ToWordsReturn};
 
-lazy_static! {
-	static ref ONES: HashMap<char, String> = hashmap! {
-			'0' => "zero".to_string(),
-			'1' => "one".to_string(),
-			'2' => "two".to_string(),
-			'3' => "three".to_string(),
-			'4' => "four".to_string(),
-			'5' => "five".to_string(),
-			'6' => "six".to_string(),
-			'7' => "seven".to_string(),
-			'8' => "eight".to_string(),
-			'9' => "nine".to_string(),
-	};
-	static ref TEENS: HashMap<char, String> = hashmap! {
-			'0' => "ten".to_string(),
-			'1' => "eleven".to_string(),
-			'2' => "twelve".to_string(),
-			'3' => "thirteen".to_string(),
-			'4' => "fourteen".to_string(),
-			'5' => "fifteen".to_string(),
-			'6' => "sixteen".to_string(),
-			'7' => "seventeen".to_string(),
-			'8' => "eighteen".to_string(),
-			'9' => "ninteen".to_string(),
-	};
-	static ref TENS: HashMap<char, String> = hashmap! {
-			'0' => "zero".to_string(),
-			'1' => "ten".to_string(),
-			'2' => "twenty".to_string(),
-			'3' => "thirty".to_string(),
-			'4' => "forty".to_string(),
-			'5' => "fifty".to_string(),
-			'6' => "sixty".to_string(),
-			'7' => "seventy".to_string(),
-			'8' => "eighty".to_string(),
-			'9' => "ninety".to_string(),
-	};
-}
+static ONES: phf::Map<char, &'static str> = phf_map! {
+		'0' => "zero",
+		'1' => "one",
+		'2' => "two",
+		'3' => "three",
+		'4' => "four",
+		'5' => "five",
+		'6' => "six",
+		'7' => "seven",
+		'8' => "eight",
+		'9' => "nine",
+};
+static TEENS: phf::Map<char, &'static str> = phf_map! {
+		'0' => "ten",
+		'1' => "eleven",
+		'2' => "twelve",
+		'3' => "thirteen",
+		'4' => "fourteen",
+		'5' => "fifteen",
+		'6' => "sixteen",
+		'7' => "seventeen",
+		'8' => "eighteen",
+		'9' => "ninteen",
+};
+static TENS: phf::Map<char, &'static str> = phf_map! {
+		'0' => "zero",
+		'1' => "ten",
+		'2' => "twenty",
+		'3' => "thirty",
+		'4' => "forty",
+		'5' => "fifty",
+		'6' => "sixty",
+		'7' => "seventy",
+		'8' => "eighty",
+		'9' => "ninety",
+};
 
 pub fn ones_word(digit: char) -> String {
 	ONES.get(&digit)
@@ -72,7 +67,7 @@ pub fn tens_word((tens_digit, ones_digit): (char, char)) -> String {
 	if ones_digit == '0' {
 		return tens_word;
 	}
-	return format!("{tens_word}-{}", ones_word(ones_digit));
+	format!("{tens_word}-{}", ones_word(ones_digit))
 }
 
 pub fn hundreds_word(
@@ -106,10 +101,7 @@ pub fn hundreds_word(
 		return format!("{result}{} {}", joiner, ones_word(ones_digit));
 	}
 
-	return format!(
-		"{result}{joiner} {}",
-		tens_word((tens_digit, ones_digit))
-	);
+	format!("{result}{joiner} {}", tens_word((tens_digit, ones_digit)))
 }
 
 pub fn thousands_word(
