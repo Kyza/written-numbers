@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use lazy_static::lazy_static;
 use regex::Regex;
-use util::map_has;
 
 pub mod en;
 pub mod util;
@@ -52,7 +51,7 @@ impl WrittenNumbers<'_> {
 	}
 
 	pub fn has_language(&self, name: &'static str) -> bool {
-		map_has(&self.languages, &name)
+		self.languages.get(&name).is_some()
 	}
 
 	pub fn to_words(
@@ -66,16 +65,16 @@ impl WrittenNumbers<'_> {
 		}
 
 		// Preparse the number.
-		let is_negative = number.starts_with("-");
+		let is_negative = number.starts_with('-');
 		// TODO: Find a way to do this without converting between &str and String repeatedly.
-		let number = number.replace(",", "");
+		let number = number.replace(',', "");
 		let mut number = number.as_str();
 		if is_negative {
 			number = &number[1..];
 		}
-		number = number.trim_start_matches("0");
-		number = number.trim_end_matches("0");
-		if number.len() == 0 {
+		number = number.trim_start_matches('0');
+		number = number.trim_end_matches('0');
+		if number.is_empty() {
 			number = "0";
 		}
 		let mut number = number.to_string();
@@ -84,10 +83,14 @@ impl WrittenNumbers<'_> {
 		}
 
 		match self.languages.get(options.language) {
-			Some(language) => language(number.as_str(), &language_options),
-			None => {
-				return Err(ToWordsError::UnimplementedLanguage);
-			}
+			Some(language) => language(number.as_str(), language_options),
+			None => Err(ToWordsError::UnimplementedLanguage),
 		}
+	}
+}
+
+impl Default for WrittenNumbers<'_> {
+	fn default() -> Self {
+		Self::new()
 	}
 }

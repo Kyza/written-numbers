@@ -4,7 +4,7 @@ use maplit::hashmap;
 use written_numbers::*;
 
 pub fn get_input(prompt: &str) -> String {
-	println!("{} ", prompt);
+	println!("{prompt} ");
 	let mut input = String::new();
 	match io::stdin().read_line(&mut input) {
 		Ok(_goes_into_input_above) => {}
@@ -29,11 +29,11 @@ fn main() {
 	);
 
 	match result {
-		Ok(result) => println!("\"{}\"", result),
+		Ok(result) => println!("\"{result}\""),
 		Err(err) => {
 			match err {
 				ToWordsError::NotANumber => {
-					println!("\"{}\" is not a valid number.", number);
+					println!("\"{number}\" is not a valid number.");
 				}
 				ToWordsError::UnimplementedLanguage => {
 					println!("The language hasn't been implemented yet.");
