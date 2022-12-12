@@ -31,7 +31,7 @@ pub fn chunk_number(str: String, chunk_size: usize) -> Vec<Vec<char>> {
 		}
 	}
 
-	if chunk.len() < 3 {
+	if !chunk.is_empty() && chunk.len() < 3 {
 		while chunk.len() < chunk_size {
 			chunk.push('0');
 		}

@@ -1,7 +1,7 @@
 use std::{fs, io};
 
 use maplit::hashmap;
-use written_numbers::*;
+use written_numbers::{*};
 
 pub fn get_input(prompt: &str) -> String {
 	println!("{prompt} ");
@@ -29,7 +29,7 @@ fn main() {
 	);
 
 	match result {
-		Ok(result) => {
+		Ok(_result) => {
 			// println!("\"{result}\"");
 			// fs::write("./number_words.txt", result)
 			// 	.expect("Unable to write file");

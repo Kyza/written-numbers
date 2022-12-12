@@ -56,7 +56,7 @@ pub static ONES_ILLION_PARTS: phf::Map<&'static str, &'static str> = phf_map! {
 };
 
 pub static ILLION_PARTS: phf::Map<u8, phf::Map<u8, &'static str>> = phf_map! {
-	0u8 => phf_map! {
+	2u8 => phf_map! {
 		1u8 => "un",
 		2u8 => "duo",
 		3u8 => "tre",
@@ -78,7 +78,7 @@ pub static ILLION_PARTS: phf::Map<u8, phf::Map<u8, &'static str>> = phf_map! {
 		8u8 => "octogint",
 		9u8 => "nonagint"
 	},
-	2u8 => phf_map! {
+	0u8 => phf_map! {
 		1u8 => "centi",
 		2u8 => "ducenti",
 		3u8 => "trecenti",
@@ -170,12 +170,7 @@ pub fn illion_part_numbers(illion: usize) -> Vec<Vec<char>> {
 	let mut buffer = itoa::Buffer::new();
 	let printed = buffer.format(illion).to_string();
 
-	let mut chunks = chunk_number(printed, 3);
-	for chunk in chunks.iter_mut() {
-		chunk.reverse();
-	}
-
-	chunks
+	chunk_number(printed, 3)
 }
 
 pub fn illion_parts(part_numbers: &[Vec<char>]) -> Vec<Vec<&'static str>> {
@@ -193,7 +188,7 @@ pub fn illion_parts(part_numbers: &[Vec<char>]) -> Vec<Vec<&'static str>> {
 				let part_string = ILLION_PARTS
 					.get(&(digit_pos as u8 % 3))
 					.unwrap()
-					.get(&(digit))
+					.get(&digit)
 					.unwrap();
 
 				part.push(part_string);
@@ -210,10 +205,10 @@ pub fn illion_parts(part_numbers: &[Vec<char>]) -> Vec<Vec<&'static str>> {
 
 lazy_static! {
 	pub static ref ILLION_COMBINER_REGEX: Vec<Regex> = vec![
-		Regex::new(r"^[36]([2-5]|0[345])").unwrap(),
-		Regex::new(r"^6(8|0[18])").unwrap(),
-		Regex::new(r"^[79]([28]|08)").unwrap(),
-		Regex::new(r"^[79]([134567]|0[1-7])").unwrap(),
+		Regex::new(r"([345]0|[2-5])[36]$").unwrap(),
+		Regex::new(r"([18]0|8)6$").unwrap(),
+		Regex::new(r"(80|[28])[79]$").unwrap(),
+		Regex::new(r"([1-7]0|[134567])[79]$").unwrap(),
 	];
 }
 
@@ -221,7 +216,7 @@ lazy_static! {
 	pub static ref ILLION_COMBINER_CHARS: Vec<char> =
 		vec!['s', 'x', 'm', 'n'];
 	pub static ref ONLY_ONES_ILLIONS_REGEX: Regex =
-		Regex::new(r"^[1-9]00$").unwrap();
+		Regex::new(r"^00[1-9]$").unwrap();
 }
 
 pub fn combine_illion_parts(
@@ -237,12 +232,12 @@ pub fn combine_illion_parts(
 			combined.push_str("lli");
 		}
 
-		let ones_word = illion_words[i][0];
+		let ones_word = illion_words[i][2];
 		let tens_word = illion_words[i][1];
-		let hundreds_word = illion_words[i][2];
-		let ones_number = illion_numbers[0];
+		let hundreds_word = illion_words[i][0];
+		let ones_number = illion_numbers[2];
 		let tens_number = illion_numbers[1];
-		let hundreds_number = illion_numbers[2];
+		let hundreds_number = illion_numbers[0];
 
 		let illion_chunk_numbers =
 			illion_numbers.iter().cloned().collect::<String>();
@@ -311,7 +306,7 @@ pub fn combine_illion_parts(
 }
 
 pub fn illion_name(illion_number: usize) -> String {
-	let illion_part_numbers = illion_part_numbers(illion_number.abs_diff(0));
+	let illion_part_numbers = illion_part_numbers(illion_number);
 
 	combine_illion_parts(
 		&illion_part_numbers,
