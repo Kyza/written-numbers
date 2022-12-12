@@ -17,16 +17,6 @@ pub fn get_input(prompt: &str) -> String {
 }
 
 fn main() {
-	println!("{:?}", illion_part_numbers(10));
-	println!("{:?}", illion_parts(&illion_part_numbers(10)));
-	println!(
-		"{:?}",
-		combine_illion_parts(
-			&illion_part_numbers(10),
-			&illion_parts(&illion_part_numbers(10)),
-		)
-	);
-
 	let number: String = get_input("Enter a number:");
 	let lang: String = get_input("Enter a language:");
 

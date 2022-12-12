@@ -73,7 +73,6 @@ impl WrittenNumbers<'_> {
 			number = &number[1..];
 		}
 		number = number.trim_start_matches('0');
-		number = number.trim_end_matches('0');
 		if number.is_empty() {
 			number = "0";
 		}

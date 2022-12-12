@@ -30,7 +30,7 @@ pub fn chunk_number(str: String, chunk_size: usize) -> Vec<Vec<char>> {
 		}
 	}
 
-	if chunk.len() > 0 {
+	if chunk.len() < 3 {
 		while chunk.len() < chunk_size {
 			chunk.insert(0, '0');
 		}

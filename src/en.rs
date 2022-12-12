@@ -251,7 +251,9 @@ pub fn combine_illion_parts(
 		let ones_number = illion_numbers[0];
 		let tens_number = illion_numbers[1];
 		let hundreds_number = illion_numbers[2];
-		let illion_chunk_numbers = illion_words[i].join("");
+
+		let illion_chunk_numbers =
+			illion_numbers.iter().cloned().collect::<String>();
 
 		// If there is nothing, it's a nillion.
 		if ones_number == '0' && tens_number == '0' && hundreds_number == '0'
@@ -278,7 +280,7 @@ pub fn combine_illion_parts(
 
 		// If there is only a ones, add the correct special ones (million, billion, ...).
 		if ONLY_ONES_ILLIONS_REGEX.is_match(&illion_chunk_numbers) {
-			combined += ONES_ILLION_PARTS[ones_number.to_string().as_str()];
+			combined.push_str(ONES_ILLION_PARTS[ones_word]);
 		}
 		// Otherwise add the ones and the combiner that was found for it.
 		else if ones_number != '0' {
@@ -318,12 +320,11 @@ pub fn combine_illion_parts(
 	combined
 }
 
-pub fn illion_name(illion_number: isize) -> String {
+pub fn illion_name(illion_number: usize) -> String {
 	let illion_part_numbers = illion_part_numbers(illion_number.abs_diff(0));
 
 	format!(
-		"{}{}",
-		if illion_number < 0 { "negative " } else { "" },
+		"{}",
 		combine_illion_parts(
 			&illion_part_numbers,
 			&illion_parts(&illion_part_numbers),
@@ -333,7 +334,7 @@ pub fn illion_name(illion_number: isize) -> String {
 
 pub fn illions_word(
 	digits: (char, char, char),
-	illion: isize,
+	illion: usize,
 	options: &LanguageOptions,
 ) -> String {
 	format!("{} {}", hundreds_word(digits, options), illion_name(illion))
@@ -360,26 +361,28 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 
 	let chunks = chunk_number(whole, 3);
 
-	let mut iteration = 0;
+	let mut i = 0;
 	for chunk in chunks.iter().rev() {
 		let chunk = (chunk[0], chunk[1], chunk[2]);
 
 		// Skip empty chunks.
 		if chunk == ('0', '0', '0') {
-			iteration += 1;
+			i += 1;
 			continue;
 		}
+
+		let word = match i {
+			// If it's the first iteration, handle the hundreds.
+			0 => hundreds_word(chunk, options),
+			1 => thousands_word(chunk, options),
+			_ => illions_word(chunk, i - 1, options),
+		};
 
 		words.insert_str(
 			0,
 			&format!(
 				"{}{} ",
-				&match iteration {
-					// If it's the first iteration, handle the hundreds.
-					0 => hundreds_word(chunk, options),
-					1 => thousands_word(chunk, options),
-					_ => illions_word(chunk, iteration - 1, options),
-				},
+				&word,
 				// Join with a comma if that option is enabled.
 				if map_has_value(
 					options,
@@ -393,7 +396,7 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 			),
 		);
 
-		iteration += 1;
+		i += 1;
 	}
 
 	// Remove the extra space and comma.
