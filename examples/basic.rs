@@ -1,7 +1,10 @@
 use std::io;
 
 use maplit::hashmap;
-use written_numbers::*;
+use written_numbers::{
+	en::{combine_illion_parts, illion_part_numbers, illion_parts},
+	*,
+};
 
 pub fn get_input(prompt: &str) -> String {
 	println!("{prompt} ");
@@ -14,6 +17,16 @@ pub fn get_input(prompt: &str) -> String {
 }
 
 fn main() {
+	println!("{:?}", illion_part_numbers(10));
+	println!("{:?}", illion_parts(&illion_part_numbers(10)));
+	println!(
+		"{:?}",
+		combine_illion_parts(
+			&illion_part_numbers(10),
+			&illion_parts(&illion_part_numbers(10)),
+		)
+	);
+
 	let number: String = get_input("Enter a number:");
 	let lang: String = get_input("Enter a language:");
 
