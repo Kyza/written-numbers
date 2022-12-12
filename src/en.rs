@@ -182,22 +182,20 @@ pub fn illion_part_numbers(illion: usize) -> Vec<Vec<char>> {
 	chunks
 }
 
-pub fn illion_parts(part_numbers: &Vec<Vec<char>>) -> Vec<Vec<&'static str>> {
+pub fn illion_parts(part_numbers: &[Vec<char>]) -> Vec<Vec<&'static str>> {
 	let mut parts: Vec<Vec<&str>> = vec![];
 
 	for numbers in part_numbers.iter() {
 		let mut part: Vec<&str> = vec![];
 
-		let mut digit_pos = 0;
-		for digit_char in numbers.iter() {
-			let digit: u8 = digit_char
-				.to_digit(10)
-				.expect(&format!("\"{digit_char}\" should be a number"))
-				as u8;
+		for (digit_pos, digit_char) in numbers.iter().enumerate() {
+			let digit: u8 = digit_char.to_digit(10).unwrap_or_else(|| {
+				panic!("\"{digit_char}\" should be a number")
+			}) as u8;
 
 			if digit != 0 {
 				let part_string = ILLION_PARTS
-					.get(&(digit_pos % 3))
+					.get(&(digit_pos as u8 % 3))
 					.unwrap()
 					.get(&(digit))
 					.unwrap();
@@ -206,8 +204,6 @@ pub fn illion_parts(part_numbers: &Vec<Vec<char>>) -> Vec<Vec<&'static str>> {
 			} else {
 				part.push("");
 			}
-
-			digit_pos += 1;
 		}
 
 		parts.push(part);
@@ -234,7 +230,7 @@ lazy_static! {
 
 pub fn combine_illion_parts(
 	illion_number_parts: &Vec<Vec<char>>,
-	illion_words: &Vec<Vec<&'static str>>,
+	illion_words: &[Vec<&'static str>],
 ) -> String {
 	let mut combined = String::new();
 
@@ -259,7 +255,7 @@ pub fn combine_illion_parts(
 		if ones_number == '0' && tens_number == '0' && hundreds_number == '0'
 		{
 			// Handle just nillion because why not.
-			if combined == "" {
+			if combined.is_empty() {
 				combined.push_str("ni");
 				continue;
 			}
@@ -270,12 +266,10 @@ pub fn combine_illion_parts(
 
 		// Grab the correct combiner for after the ones.
 		let mut illions_combiner = String::new();
-		let mut j = 0;
-		for regex in ILLION_COMBINER_REGEX.iter() {
+		for (j, regex) in ILLION_COMBINER_REGEX.iter().enumerate() {
 			if regex.is_match(&illion_chunk_numbers) {
 				illions_combiner.push(ILLION_COMBINER_CHARS[j]);
 			}
-			j += 1;
 		}
 
 		// If there is only a ones, add the correct special ones (million, billion, ...).
@@ -323,12 +317,9 @@ pub fn combine_illion_parts(
 pub fn illion_name(illion_number: usize) -> String {
 	let illion_part_numbers = illion_part_numbers(illion_number.abs_diff(0));
 
-	format!(
-		"{}",
-		combine_illion_parts(
-			&illion_part_numbers,
-			&illion_parts(&illion_part_numbers),
-		)
+	combine_illion_parts(
+		&illion_part_numbers,
+		&illion_parts(&illion_part_numbers),
 	)
 }
 
