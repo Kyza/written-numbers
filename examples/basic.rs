@@ -1,4 +1,4 @@
-use std::io;
+use std::{fs, io};
 
 use maplit::hashmap;
 use written_numbers::*;
@@ -14,14 +14,14 @@ pub fn get_input(prompt: &str) -> String {
 }
 
 fn main() {
-	let number: String = get_input("Enter a number:");
-	let lang: String = get_input("Enter a language:");
+	let number = fs::read_to_string("./number.txt")
+		.expect("Should have been able to read the file");
 
 	let wn = WrittenNumbers::new();
 
 	let result = wn.to_words(
 		&number,
-		&ToWordsOptions { language: &lang },
+		&ToWordsOptions { language: "en" },
 		&hashmap! {
 			"hundred and".to_string() => "true".to_string(),
 			"commas".to_string() => "true".to_string()
@@ -29,7 +29,11 @@ fn main() {
 	);
 
 	match result {
-		Ok(result) => println!("\"{result}\""),
+		Ok(result) => {
+			// println!("\"{result}\"");
+			fs::write("./number_words.txt", result)
+				.expect("Unable to write file");
+		}
 		Err(err) => {
 			match err {
 				ToWordsError::NotANumber => {

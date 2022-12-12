@@ -332,7 +332,7 @@ pub fn illions_word(
 }
 
 pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
-	let mut words = String::new();
+	let mut words: Vec<String> = vec![];
 
 	match number {
 		"0" => return Ok(ones_word('0')),
@@ -369,38 +369,31 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 			_ => illions_word(chunk, i - 1, options),
 		};
 
-		words.insert_str(
-			0,
-			&format!(
-				"{}{} ",
-				&word,
-				// Join with a comma if that option is enabled.
-				if map_has_value(
-					options,
-					&"commas".to_string(),
-					&"true".to_string()
-				) {
-					","
-				} else {
-					""
-				}
-			),
-		);
+		words.push(word);
 
 		i += 1;
 	}
 
-	// Remove the extra space and comma.
-	words.truncate(words.len() - 2);
+	// The order of the words is reversed, so flip it in place.
+	words.reverse();
+
+	// Join the whole words with a comma if needed.
+	words = vec![words.join(
+		if map_has_value(options, &"commas".to_string(), &"true".to_string())
+		{
+			", "
+		} else {
+			" "
+		},
+	)];
 
 	// TODO: 0.8009 => zero point eight thousand nine ten-thousandths
 	if !decimals.is_empty() {
-		words.push_str(" point");
+		words.push("point".to_string());
 		for decimal in decimals.chars() {
-			words.push(' ');
-			words.push_str(&ones_word(decimal));
+			words.push(ones_word(decimal));
 		}
 	}
 
-	Ok(words)
+	Ok(words.join(" "))
 }
