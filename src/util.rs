@@ -22,20 +22,24 @@ pub fn chunk_number(str: String, chunk_size: usize) -> Vec<Vec<char>> {
 	let chars = str.chars().into_iter().rev();
 
 	for char in chars {
-		chunk.insert(0, char);
+		chunk.push(char);
 
 		if chunk.len() == chunk_size {
-			chunks.insert(0, chunk.clone());
+			chunk.reverse();
+			chunks.push(chunk.clone());
 			chunk.clear();
 		}
 	}
 
 	if chunk.len() < 3 {
 		while chunk.len() < chunk_size {
-			chunk.insert(0, '0');
+			chunk.push('0');
 		}
-		chunks.insert(0, chunk.clone());
+		chunk.reverse();
+		chunks.push(chunk);
 	}
+
+	chunks.reverse();
 
 	chunks
 }

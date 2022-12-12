@@ -6,7 +6,7 @@ use regex::Regex;
 pub mod en;
 pub mod util;
 
-pub type LanguageOptions = HashMap<String, String>;
+pub type LanguageOptions = HashMap<&'static str, &'static str>;
 pub type ToWordsReturn = Result<String, ToWordsError>;
 pub type LanguageClosure = dyn Fn(&str, &LanguageOptions) -> ToWordsReturn;
 pub type LanguageMap<'a> = HashMap<&'a str, Box<LanguageClosure>>;
@@ -67,8 +67,7 @@ impl WrittenNumbers<'_> {
 		// Preparse the number.
 		let is_negative = number.starts_with('-');
 		// TODO: Find a way to do this without converting between &str and String repeatedly.
-		let number = number.replace(',', "");
-		let mut number = number.as_str();
+		let mut number = number;
 		if is_negative {
 			number = &number[1..];
 		}

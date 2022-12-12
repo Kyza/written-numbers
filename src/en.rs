@@ -139,11 +139,7 @@ pub fn hundreds_word(
 		return result;
 	}
 
-	let joiner = if map_has_value(
-		options,
-		&"hundred and".to_string(),
-		&"true".to_string(),
-	) {
+	let joiner = if map_has_value(options, &"hundred and", &"true") {
 		" and"
 	} else {
 		""
@@ -378,14 +374,11 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 	words.reverse();
 
 	// Join the whole words with a comma if needed.
-	words = vec![words.join(
-		if map_has_value(options, &"commas".to_string(), &"true".to_string())
-		{
-			", "
-		} else {
-			" "
-		},
-	)];
+	words = vec![words.join(if map_has_value(options, &"commas", &"true") {
+		", "
+	} else {
+		" "
+	})];
 
 	// TODO: 0.8009 => zero point eight thousand nine ten-thousandths
 	if !decimals.is_empty() {

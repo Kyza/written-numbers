@@ -23,16 +23,16 @@ fn main() {
 		&number,
 		&ToWordsOptions { language: "en" },
 		&hashmap! {
-			"hundred and".to_string() => "true".to_string(),
-			"commas".to_string() => "true".to_string()
+			"hundred and" => "true",
+			"commas" => "true"
 		},
 	);
 
 	match result {
 		Ok(result) => {
 			// println!("\"{result}\"");
-			fs::write("./number_words.txt", result)
-				.expect("Unable to write file");
+			// fs::write("./number_words.txt", result)
+			// 	.expect("Unable to write file");
 		}
 		Err(err) => {
 			match err {
