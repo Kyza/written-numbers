@@ -1,10 +1,7 @@
 use std::io;
 
 use maplit::hashmap;
-use written_numbers::{
-	en::{combine_illion_parts, illion_part_numbers, illion_parts},
-	*,
-};
+use written_numbers::*;
 
 pub fn get_input(prompt: &str) -> String {
 	println!("{prompt} ");
