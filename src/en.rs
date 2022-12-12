@@ -139,8 +139,6 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 	for chunk in chunks.iter().rev() {
 		let chunk = (chunk[0], chunk[1], chunk[2]);
 
-		println!("{chunk:?}");
-
 		// Skip empty chunks.
 		if chunk == ('0', '0', '0') {
 			iteration += 1;

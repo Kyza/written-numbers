@@ -14,27 +14,27 @@ where
 	}
 }
 
+// TODO: Don't use insert.
 pub fn chunk_number(str: String, chunk_size: usize) -> Vec<Vec<char>> {
 	let mut chunks = vec![];
+	let mut chunk = vec![];
 
-	let chars = str.chars().collect::<Vec<_>>();
+	let chars = str.chars().into_iter().rev();
 
-	let mut index = str.len();
-	while index > 0 {
-		let mut chunk = vec![];
+	for char in chars {
+		chunk.insert(0, char);
 
-		let mut i = 1;
-		while i <= chunk_size {
-			chunk.insert(
-				0,
-				if index > i - 1 { chars[index - i] } else { '0' },
-			);
-			i += 1;
+		if chunk.len() == chunk_size {
+			chunks.insert(0, chunk.clone());
+			chunk.clear();
 		}
+	}
 
-		chunks.insert(0, chunk);
-
-		index = index.saturating_sub(chunk_size);
+	if chunk.len() > 0 {
+		while chunk.len() < chunk_size {
+			chunk.insert(0, '0');
+		}
+		chunks.insert(0, chunk.clone());
 	}
 
 	chunks
