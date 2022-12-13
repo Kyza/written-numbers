@@ -13,7 +13,7 @@ pub type LanguageMap<'a> = HashMap<&'a str, Box<LanguageClosure>>;
 
 lazy_static! {
 	static ref IS_NUMBER_REGEX: Regex =
-		Regex::new(r"^-?\d+(\.\d+)?$").unwrap();
+		Regex::new(r"^-?[1-9]{1}\d*(\.\d+)?$").unwrap();
 }
 
 pub struct ToWordsOptions<'a> {
@@ -64,24 +64,8 @@ impl WrittenNumbers<'_> {
 			return Err(ToWordsError::NotANumber);
 		}
 
-		// Preparse the number.
-		let is_negative = number.starts_with('-');
-		// TODO: Find a way to do this without converting between &str and String repeatedly.
-		let mut number = number;
-		if is_negative {
-			number = &number[1..];
-		}
-		number = number.trim_start_matches('0');
-		if number.is_empty() {
-			number = "0";
-		}
-		let mut number = number.to_string();
-		if is_negative {
-			number.insert(0, '-');
-		}
-
 		match self.languages.get(options.language) {
-			Some(language) => language(number.as_str(), language_options),
+			Some(language) => language(number, language_options),
 			None => Err(ToWordsError::UnimplementedLanguage),
 		}
 	}

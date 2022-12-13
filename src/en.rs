@@ -139,7 +139,7 @@ pub fn hundreds_word(
 		return result;
 	}
 
-	let joiner = if map_has_value(options, &"hundred and", &"true") {
+	let joiner = if map_has_value(options, &"hundred_and", &"true") {
 		" and"
 	} else {
 		""
@@ -331,25 +331,28 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 		_ => {}
 	}
 
+	let is_negative = number.starts_with('-');
+
 	// Split off the decimals from the actual number.
 	let mut decimals = String::new();
 	let whole;
 	if let Some(decimal_point_index) = number.find('.') {
 		decimals = number[decimal_point_index + 1..].to_string();
-		whole = number[..decimal_point_index].to_string();
+		whole = number[if is_negative { 1 } else { 0 }..decimal_point_index]
+			.to_string();
 	} else {
-		whole = number.to_string();
+		whole = number[if is_negative { 1 } else { 0 }..].to_string();
 	}
 
 	let chunks = chunk_number(whole, 3);
 
-	let mut i = 0;
-	for chunk in chunks.iter().rev() {
+	let mut i = chunks.len() - 1;
+	for chunk in chunks {
 		let chunk = (chunk[0], chunk[1], chunk[2]);
 
 		// Skip empty chunks.
 		if chunk == ('0', '0', '0') {
-			i += 1;
+			i -= 1;
 			continue;
 		}
 
@@ -362,18 +365,20 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 
 		words.push(word);
 
-		i += 1;
+		i -= 1;
 	}
 
-	// The order of the words is reversed, so flip it in place.
-	words.reverse();
-
 	// Join the whole words with a comma if needed.
-	words = vec![words.join(if map_has_value(options, &"commas", &"true") {
-		", "
-	} else {
-		" "
-	})];
+	words = vec![format!(
+		"{}{}",
+		// Prepend negative if needed.
+		if is_negative { "negative " } else { "" },
+		words.join(if map_has_value(options, &"commas", &"true") {
+			", "
+		} else {
+			" "
+		})
+	)];
 
 	// TODO: 0.8009 => zero point eight thousand nine ten-thousandths
 	if !decimals.is_empty() {
