@@ -16,8 +16,8 @@ where
 
 // TODO: Don't use insert.
 pub fn chunk_number(str: String, chunk_size: usize) -> Vec<Vec<char>> {
-	let mut chunks = vec![];
-	let mut chunk = vec![];
+	let mut chunks = Vec::with_capacity((str.len() / 3) + (str.len() % 3));
+	let mut chunk = Vec::with_capacity(chunk_size);
 
 	let chars = str.chars().into_iter().rev();
 

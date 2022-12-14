@@ -174,10 +174,10 @@ pub fn illion_part_numbers(illion: usize) -> Vec<Vec<char>> {
 }
 
 pub fn illion_parts(part_numbers: &[Vec<char>]) -> Vec<Vec<&'static str>> {
-	let mut parts: Vec<Vec<&str>> = vec![];
+	let mut parts: Vec<Vec<&str>> = Vec::with_capacity(part_numbers.len());
 
 	for numbers in part_numbers.iter() {
-		let mut part: Vec<&str> = vec![];
+		let mut part: Vec<&str> = Vec::with_capacity(numbers.len());
 
 		for (digit_pos, digit_char) in numbers.iter().enumerate() {
 			let digit: u8 = digit_char.to_digit(10).unwrap_or_else(|| {
@@ -323,8 +323,6 @@ pub fn illions_word(
 }
 
 pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
-	let mut words: Vec<String> = vec![];
-
 	match number {
 		"0" => return Ok(ones_word('0')),
 		"-0" => return Ok(format!("negative {}", ones_word('0'))),
@@ -346,6 +344,8 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 
 	let chunks = chunk_number(whole, 3);
 
+	let mut whole_words: Vec<String> = Vec::with_capacity(chunks.len());
+
 	let mut i = chunks.len() - 1;
 	for chunk in chunks {
 		let chunk = (chunk[0], chunk[1], chunk[2]);
@@ -363,30 +363,33 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 			_ => illions_word(chunk, i - 1, options),
 		};
 
-		words.push(word);
+		whole_words.push(word);
 
-		i -= 1;
+		i = i.saturating_sub(1);
 	}
 
 	// Join the whole words with a comma if needed.
-	words = vec![format!(
+	let mut whole_words = format!(
 		"{}{}",
 		// Prepend negative if needed.
 		if is_negative { "negative " } else { "" },
-		words.join(if map_has_value(options, &"commas", &"true") {
+		whole_words.join(if map_has_value(options, &"commas", &"true") {
 			", "
 		} else {
 			" "
 		})
-	)];
+	);
 
+	let mut decimal_words = Vec::with_capacity(decimals.len() + 1);
 	// TODO: 0.8009 => zero point eight thousand nine ten-thousandths
 	if !decimals.is_empty() {
-		words.push("point".to_string());
+		decimal_words.push("point".to_string());
 		for decimal in decimals.chars() {
-			words.push(ones_word(decimal));
+			decimal_words.push(ones_word(decimal));
 		}
 	}
 
-	Ok(words.join(" "))
+	whole_words.push_str(&decimal_words.join(""));
+
+	Ok(whole_words)
 }

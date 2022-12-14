@@ -9,15 +9,23 @@ struct Args {
 	#[arg(short, long, default_value_t = {"en".to_string()})]
 	language: String,
 
-	#[arg(short, long, default_value_t = false)]
+	#[arg(short = 'a', long, default_value_t = false)]
 	hundred_and: bool,
 
 	#[arg(short, long, default_value_t = true)]
 	commas: bool,
+
+	#[arg(short, long, default_value_t = false)]
+	memory: bool,
 }
 
 use maplit::hashmap;
 use written_numbers::*;
+
+use peak_alloc::PeakAlloc;
+
+#[global_allocator]
+static PEAK_ALLOC: PeakAlloc = PeakAlloc;
 
 fn main() {
 	let args = Args::parse();
@@ -46,5 +54,10 @@ fn main() {
 				);
 			}
 		},
+	}
+
+	if args.memory {
+		let peak_mem = PEAK_ALLOC.peak_usage_as_mb();
+		println!("Peak memory: {} MB", peak_mem);
 	}
 }
