@@ -352,7 +352,7 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 
 		// Skip empty chunks.
 		if chunk == ('0', '0', '0') {
-			i -= 1;
+			i = i.saturating_sub(1);
 			continue;
 		}
 
