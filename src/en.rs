@@ -4,7 +4,7 @@ use regex::Regex;
 
 use crate::{
 	util::{chunk_number, map_has_value},
-	LanguageOptions, ToWordsReturn,
+	LanguageOptions, ToOrdinalReturn, ToWordsReturn,
 };
 
 pub static ONES: phf::Map<char, &'static str> = phf_map! {
@@ -392,4 +392,46 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 	whole_words.push_str(&decimal_words.join(""));
 
 	Ok(whole_words)
+}
+
+pub fn to_ordinal(words: &str) -> ToOrdinalReturn {
+	let mut swords = words.to_string();
+
+	// Special cases.
+	if swords.ends_with("one") {
+		swords.replace_range((swords.len() - 3).., "first");
+		return Ok(swords);
+	}
+	if words.ends_with("two") {
+		swords.replace_range((swords.len() - 3).., "second");
+		return Ok(swords);
+	}
+	if words.ends_with("three") {
+		swords.replace_range((swords.len() - 5).., "third");
+		return Ok(swords);
+	}
+	if words.ends_with("five") {
+		swords.replace_range((swords.len() - 4).., "fifth");
+		return Ok(swords);
+	}
+	if words.ends_with("eight") {
+		swords.replace_range((swords.len() - 5).., "eighth");
+		return Ok(swords);
+	}
+	if words.ends_with("nine") {
+		swords.replace_range((swords.len() - 4).., "ninth");
+		return Ok(swords);
+	}
+	if words.ends_with("twelve") {
+		swords.replace_range((swords.len() - 6).., "twelfth");
+		return Ok(swords);
+	}
+
+	// Handle twenty through ninety.
+	if words.ends_with("y") {
+		swords.replace_range((swords.len() - 1).., "ieth");
+		return Ok(swords);
+	}
+
+	Ok(format!("{swords}th"))
 }

@@ -8,8 +8,12 @@ pub mod util;
 
 pub type LanguageOptions = HashMap<&'static str, &'static str>;
 pub type ToWordsReturn = Result<String, ToWordsError>;
-pub type LanguageClosure = dyn Fn(&str, &LanguageOptions) -> ToWordsReturn;
-pub type LanguageMap<'a> = HashMap<&'a str, Box<LanguageClosure>>;
+pub type ToWordsClosure = dyn Fn(&str, &LanguageOptions) -> ToWordsReturn;
+
+pub type ToOrdinalReturn = Result<String, ToOrdinalError>;
+pub type ToOrdinalClosure = dyn Fn(&str) -> ToOrdinalReturn;
+
+pub type LanguageMap<'a> = HashMap<&'a str, LanguageImplementation>;
 
 lazy_static! {
 	static ref IS_NUMBER_REGEX: Regex =
@@ -19,9 +23,16 @@ lazy_static! {
 pub struct ToWordsOptions<'a> {
 	pub language: &'a str,
 }
+pub struct ToOrdinalOptions<'a> {
+	pub language: &'a str,
+}
 
 pub enum ToWordsError {
 	NotANumber,
+	UnimplementedLanguage,
+}
+
+pub enum ToOrdinalError {
 	UnimplementedLanguage,
 }
 
@@ -29,11 +40,22 @@ pub struct WrittenNumbers<'a> {
 	languages: LanguageMap<'a>,
 }
 
+pub struct LanguageImplementation {
+	to_words: Box<ToWordsClosure>,
+	to_ordinal: Box<ToOrdinalClosure>,
+}
+
 impl WrittenNumbers<'_> {
 	pub fn new() -> Self {
 		let mut languages: LanguageMap = HashMap::new();
 
-		languages.insert("en", Box::new(en::to_words));
+		languages.insert(
+			"en",
+			LanguageImplementation {
+				to_words: Box::new(en::to_words),
+				to_ordinal: Box::new(en::to_ordinal),
+			},
+		);
 
 		Self { languages }
 	}
@@ -41,9 +63,9 @@ impl WrittenNumbers<'_> {
 	pub fn register_language(
 		&mut self,
 		name: &'static str,
-		implementation: &'static LanguageClosure,
+		implementation: LanguageImplementation,
 	) {
-		self.languages.insert(name, Box::new(implementation));
+		self.languages.insert(name, implementation);
 	}
 
 	pub fn unregister_language(&mut self, name: &'static str) {
@@ -65,8 +87,19 @@ impl WrittenNumbers<'_> {
 		}
 
 		match self.languages.get(options.language) {
-			Some(language) => language(number, language_options),
+			Some(language) => (language.to_words)(number, language_options),
 			None => Err(ToWordsError::UnimplementedLanguage),
+		}
+	}
+
+	pub fn to_ordinal(
+		&self,
+		words: &str,
+		options: &ToOrdinalOptions,
+	) -> ToOrdinalReturn {
+		match self.languages.get(options.language) {
+			Some(language) => (language.to_ordinal)(words),
+			None => Err(ToOrdinalError::UnimplementedLanguage),
 		}
 	}
 }
