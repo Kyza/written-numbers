@@ -10,20 +10,14 @@ pub type LanguageOptions = HashMap<&'static str, &'static str>;
 pub type ToWordsReturn = Result<String, ToWordsError>;
 pub type ToWordsClosure = dyn Fn(&str, &LanguageOptions) -> ToWordsReturn;
 
-pub type ToOrdinalReturn = Result<String, ToOrdinalError>;
-pub type ToOrdinalClosure = dyn Fn(&str) -> ToOrdinalReturn;
-
-pub type LanguageMap<'a> = HashMap<&'a str, LanguageImplementation>;
+pub type LanguageMap<'a> = HashMap<&'a str, Box<ToWordsClosure>>;
 
 lazy_static! {
 	static ref IS_NUMBER_REGEX: Regex =
-		Regex::new(r"^-?[1-9]{1}\d*(\.\d+)?$").unwrap();
+		Regex::new(r"^(-?\d+)(\.\d+)?$").unwrap();
 }
 
 pub struct ToWordsOptions<'a> {
-	pub language: &'a str,
-}
-pub struct ToOrdinalOptions<'a> {
 	pub language: &'a str,
 }
 
@@ -36,22 +30,9 @@ pub enum ToOrdinalError {
 	UnimplementedLanguage,
 }
 
-pub struct LanguageImplementation {
-	to_words: Box<ToWordsClosure>,
-	to_ordinal: Box<ToOrdinalClosure>,
-}
-
-fn add_default_languages(
-	languages: &mut HashMap<&str, LanguageImplementation>,
-) {
+fn add_default_languages(languages: &mut LanguageMap) {
 	if !languages.contains_key("en") {
-		languages.insert(
-			"en",
-			LanguageImplementation {
-				to_words: Box::new(en::to_words),
-				to_ordinal: Box::new(en::to_ordinal),
-			},
-		);
+		languages.insert("en", Box::new(en::to_words));
 	}
 }
 
@@ -59,7 +40,7 @@ pub fn to_words(
 	number: &str,
 	options: &ToWordsOptions,
 	language_options: &LanguageOptions,
-	languages: &mut HashMap<&str, LanguageImplementation>,
+	languages: &mut HashMap<&str, Box<ToWordsClosure>>,
 ) -> ToWordsReturn {
 	if !IS_NUMBER_REGEX.is_match(number) {
 		return Err(ToWordsError::NotANumber);
@@ -67,21 +48,23 @@ pub fn to_words(
 
 	add_default_languages(languages);
 
-	match languages.get(options.language) {
-		Some(language) => (language.to_words)(number, language_options),
-		None => Err(ToWordsError::UnimplementedLanguage),
+	let mut parsed_number =
+		number.trim_start_matches('-').trim_matches('0').to_string();
+	if parsed_number.ends_with('.') {
+		parsed_number.pop();
 	}
-}
-
-pub fn to_ordinal(
-	words: &str,
-	options: &ToOrdinalOptions,
-	languages: &mut HashMap<&str, LanguageImplementation>,
-) -> ToOrdinalReturn {
-	add_default_languages(languages);
+	if parsed_number.starts_with('.') {
+		parsed_number = format!("0{}", parsed_number);
+	}
+	if parsed_number.len() == 0 {
+		parsed_number = "0".to_string();
+	}
+	if number.starts_with('-') {
+		parsed_number = format!("-{}", parsed_number);
+	}
 
 	match languages.get(options.language) {
-		Some(language) => (language.to_ordinal)(words),
-		None => Err(ToOrdinalError::UnimplementedLanguage),
+		Some(language) => (language)(&parsed_number, language_options),
+		None => Err(ToWordsError::UnimplementedLanguage),
 	}
 }

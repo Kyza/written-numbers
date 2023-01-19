@@ -21,7 +21,7 @@ struct Args {
 	#[arg(short = 'm', long, default_value_t = 'a')]
 	match_case: char,
 
-	#[arg(short, long, default_value_t = false)]
+	#[arg(long, default_value_t = false)]
 	memory: bool,
 }
 
@@ -58,42 +58,18 @@ fn main() {
 		&ToWordsOptions { language: "en" },
 		&hashmap! {
 			"hundred_and" => if args.hundred_and {"true"} else {"false"},
-			"commas" => if args.commas {"true"} else {"false"}
+			"commas" => if args.commas {"true"} else {"false"},
+			"ordinal" => if args.ordinal {"true"} else {"false"},
 		},
 		&mut hashmap! {},
 	);
 
 	match result {
 		Ok(result) => {
-			if !args.ordinal {
-				if args.match_case.is_uppercase() {
-					println!("{}", str_cap(&result));
-				} else {
-					println!("{result}");
-				}
+			if args.match_case.is_uppercase() {
+				println!("{}", str_cap(&result));
 			} else {
-				let ordinal = to_ordinal(
-					&result,
-					&ToOrdinalOptions { language: "en" },
-					&mut hashmap! {},
-				);
-				match ordinal {
-					Ok(result) => {
-						if args.match_case.is_uppercase() {
-							println!("{}", str_cap(&result));
-						} else {
-							println!("{result}");
-						}
-					}
-					Err(err) => match err {
-						ToOrdinalError::UnimplementedLanguage => {
-							println!(
-								"The language \"{}\" hasn't been implemented yet.",
-								args.language
-							);
-						}
-					},
-				}
+				println!("{result}");
 			}
 		}
 		Err(err) => match err {

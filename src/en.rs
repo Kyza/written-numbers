@@ -4,7 +4,7 @@ use regex::Regex;
 
 use crate::{
 	util::{chunk_number, map_has_value},
-	LanguageOptions, ToOrdinalReturn, ToWordsReturn,
+	LanguageOptions, ToWordsReturn,
 };
 
 pub static ONES: phf::Map<char, &'static str> = phf_map! {
@@ -346,12 +346,13 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 
 	let mut whole_words: Vec<String> = Vec::with_capacity(chunks.len());
 
-	let mut i = chunks.len() - 1;
+	let mut i = chunks.len().saturating_sub(1);
+	let chunk_count = chunks.len();
 	for chunk in chunks {
 		let chunk = (chunk[0], chunk[1], chunk[2]);
 
 		// Skip empty chunks.
-		if chunk == ('0', '0', '0') {
+		if chunk == ('0', '0', '0') && chunk_count > 1 {
 			i = i.saturating_sub(1);
 			continue;
 		}
@@ -380,58 +381,88 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 		})
 	);
 
-	let mut decimal_words = Vec::with_capacity(decimals.len() + 1);
-	// TODO: 0.8009 => zero point eight thousand nine ten-thousandths
+	// Handle decimal places.
+	let mut decimal_words: String = String::new();
 	if !decimals.is_empty() {
-		decimal_words.push("point".to_string());
-		for decimal in decimals.chars() {
-			decimal_words.push(ones_word(decimal));
-		}
+		let mut decimal_options = options.clone();
+		decimal_options.insert("ordinal", "false");
+
+		let decimal_words_result = to_words(&decimals, &decimal_options);
+		decimal_words = match decimal_words_result {
+			Ok(dw) => dw,
+			Err(err) => {
+				return Err(err);
+			}
+		};
+
+		let decimal_place = format!(
+			"1{}",
+			(0..decimals.len()).map(|_| "0").collect::<String>()
+		);
+		decimal_options.insert("ordinal", "true");
+		let decimal_place_word_result =
+			to_words(&decimal_place, &decimal_options);
+		let decimal_place_word = match decimal_place_word_result {
+			Ok(dw) => dw.trim_start_matches("one ").to_owned(),
+			Err(err) => {
+				return Err(err);
+			}
+		};
+
+		decimal_words = format!("{} {}", decimal_words, decimal_place_word);
 	}
 
-	whole_words.push_str(&decimal_words.join(""));
+	// let mut decimal_words = decimal_words_vec.join(" ");
+	if map_has_value(options, &"ordinal", &"true") {
+		whole_words = to_ordinal(&whole_words);
+	}
+
+	if !decimals.is_empty() {
+		whole_words.push_str(&" point ".to_string());
+	}
+	whole_words.push_str(&decimal_words);
 
 	Ok(whole_words)
 }
 
-pub fn to_ordinal(words: &str) -> ToOrdinalReturn {
-	let mut swords = words.to_string();
+pub fn to_ordinal(words: &str) -> String {
+	let mut words = words.to_string();
 
 	// Special cases.
-	if swords.ends_with("one") {
-		swords.replace_range((swords.len() - 3).., "first");
-		return Ok(swords);
+	if words.ends_with("one") {
+		words.replace_range((words.len() - 3).., "first");
+		return words;
 	}
 	if words.ends_with("two") {
-		swords.replace_range((swords.len() - 3).., "second");
-		return Ok(swords);
+		words.replace_range((words.len() - 3).., "second");
+		return words;
 	}
 	if words.ends_with("three") {
-		swords.replace_range((swords.len() - 5).., "third");
-		return Ok(swords);
+		words.replace_range((words.len() - 5).., "third");
+		return words;
 	}
 	if words.ends_with("five") {
-		swords.replace_range((swords.len() - 4).., "fifth");
-		return Ok(swords);
+		words.replace_range((words.len() - 4).., "fifth");
+		return words;
 	}
 	if words.ends_with("eight") {
-		swords.replace_range((swords.len() - 5).., "eighth");
-		return Ok(swords);
+		words.replace_range((words.len() - 5).., "eighth");
+		return words;
 	}
 	if words.ends_with("nine") {
-		swords.replace_range((swords.len() - 4).., "ninth");
-		return Ok(swords);
+		words.replace_range((words.len() - 4).., "ninth");
+		return words;
 	}
 	if words.ends_with("twelve") {
-		swords.replace_range((swords.len() - 6).., "twelfth");
-		return Ok(swords);
+		words.replace_range((words.len() - 6).., "twelfth");
+		return words;
 	}
 
 	// Handle twenty through ninety.
 	if words.ends_with("y") {
-		swords.replace_range((swords.len() - 1).., "ieth");
-		return Ok(swords);
+		words.replace_range((words.len() - 1).., "ieth");
+		return words;
 	}
 
-	Ok(format!("{swords}th"))
+	format!("{words}th")
 }
