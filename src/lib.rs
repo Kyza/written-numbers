@@ -36,19 +36,15 @@ pub enum ToOrdinalError {
 	UnimplementedLanguage,
 }
 
-pub struct WrittenNumbers<'a> {
-	languages: LanguageMap<'a>,
-}
-
 pub struct LanguageImplementation {
 	to_words: Box<ToWordsClosure>,
 	to_ordinal: Box<ToOrdinalClosure>,
 }
 
-impl WrittenNumbers<'_> {
-	pub fn new() -> Self {
-		let mut languages: LanguageMap = HashMap::new();
-
+fn add_default_languages(
+	languages: &mut HashMap<&str, LanguageImplementation>,
+) {
+	if !languages.contains_key("en") {
 		languages.insert(
 			"en",
 			LanguageImplementation {
@@ -56,56 +52,36 @@ impl WrittenNumbers<'_> {
 				to_ordinal: Box::new(en::to_ordinal),
 			},
 		);
-
-		Self { languages }
-	}
-
-	pub fn register_language(
-		&mut self,
-		name: &'static str,
-		implementation: LanguageImplementation,
-	) {
-		self.languages.insert(name, implementation);
-	}
-
-	pub fn unregister_language(&mut self, name: &'static str) {
-		self.languages.remove(name);
-	}
-
-	pub fn has_language(&self, name: &'static str) -> bool {
-		self.languages.get(&name).is_some()
-	}
-
-	pub fn to_words(
-		&self,
-		number: &str,
-		options: &ToWordsOptions,
-		language_options: &LanguageOptions,
-	) -> ToWordsReturn {
-		if !IS_NUMBER_REGEX.is_match(number) {
-			return Err(ToWordsError::NotANumber);
-		}
-
-		match self.languages.get(options.language) {
-			Some(language) => (language.to_words)(number, language_options),
-			None => Err(ToWordsError::UnimplementedLanguage),
-		}
-	}
-
-	pub fn to_ordinal(
-		&self,
-		words: &str,
-		options: &ToOrdinalOptions,
-	) -> ToOrdinalReturn {
-		match self.languages.get(options.language) {
-			Some(language) => (language.to_ordinal)(words),
-			None => Err(ToOrdinalError::UnimplementedLanguage),
-		}
 	}
 }
 
-impl Default for WrittenNumbers<'_> {
-	fn default() -> Self {
-		Self::new()
+pub fn to_words(
+	number: &str,
+	options: &ToWordsOptions,
+	language_options: &LanguageOptions,
+	languages: &mut HashMap<&str, LanguageImplementation>,
+) -> ToWordsReturn {
+	if !IS_NUMBER_REGEX.is_match(number) {
+		return Err(ToWordsError::NotANumber);
+	}
+
+	add_default_languages(languages);
+
+	match languages.get(options.language) {
+		Some(language) => (language.to_words)(number, language_options),
+		None => Err(ToWordsError::UnimplementedLanguage),
+	}
+}
+
+pub fn to_ordinal(
+	words: &str,
+	options: &ToOrdinalOptions,
+	languages: &mut HashMap<&str, LanguageImplementation>,
+) -> ToOrdinalReturn {
+	add_default_languages(languages);
+
+	match languages.get(options.language) {
+		Some(language) => (language.to_ordinal)(words),
+		None => Err(ToOrdinalError::UnimplementedLanguage),
 	}
 }

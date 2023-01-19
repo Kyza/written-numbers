@@ -42,8 +42,6 @@ fn str_cap(s: &str) -> String {
 fn main() {
 	let args = Args::parse();
 
-	let wn = WrittenNumbers::new();
-
 	let mut number = args.number;
 
 	if number == "random" {
@@ -55,13 +53,14 @@ fn main() {
 		}
 	}
 
-	let result = wn.to_words(
+	let result = to_words(
 		&number,
 		&ToWordsOptions { language: "en" },
 		&hashmap! {
 			"hundred_and" => if args.hundred_and {"true"} else {"false"},
 			"commas" => if args.commas {"true"} else {"false"}
 		},
+		&mut hashmap! {},
 	);
 
 	match result {
@@ -73,9 +72,10 @@ fn main() {
 					println!("{result}");
 				}
 			} else {
-				let ordinal = wn.to_ordinal(
+				let ordinal = to_ordinal(
 					&result,
 					&ToOrdinalOptions { language: "en" },
+					&mut hashmap! {},
 				);
 				match ordinal {
 					Ok(result) => {

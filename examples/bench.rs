@@ -12,13 +12,14 @@ fn main() {
 	let number =
 		fs::read_to_string("./number.txt").expect("numbers.txt should exist");
 
-	let result = WrittenNumbers::new().to_words(
+	let result = to_words(
 		&number,
 		&ToWordsOptions { language: "en" },
 		&hashmap! {
 			"hundred_and" => "true",
 			"commas" => "true"
 		},
+		&mut hashmap! {},
 	);
 
 	match result {
