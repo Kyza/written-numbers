@@ -29,9 +29,6 @@ export function toWords({
 		processedLanguageOptions[snakeCase(key)] = val.toString();
 	}
 
-	// @ts-ignore
-	console.log(processedLanguageOptions);
-
 	return to_words(number.toString(), options, processedLanguageOptions);
 }
 
