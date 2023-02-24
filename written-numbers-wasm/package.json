@@ -1,6 +1,6 @@
 {
 	"name": "written-numbers",
-	"version": "1.0.1",
+	"version": "1.0.3",
 	"description": "Convert numbers to their word counterparts.",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -29,7 +29,6 @@
 	"author": "Kyza",
 	"license": "MIT",
 	"scripts": {
-		"prepublish": "pnpm run build",
 		"build": "pnpm run build:rs & pnpm run build:ts",
 		"build:rs": "wasm-pack build --target web --out-dir ./dist/wasm",
 		"build:ts": "tsc",
@@ -40,7 +39,7 @@
 	},
 	"files": [
 		"package.json",
-		"dist/*",
+		"dist/**",
 		"LICENSE",
 		"tsconfig.json"
 	]
