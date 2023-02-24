@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use std::collections::HashMap;
 
 use lazy_static::lazy_static;
@@ -6,42 +8,45 @@ use regex::Regex;
 pub mod en;
 pub mod util;
 
-pub type LanguageOptions = HashMap<&'static str, &'static str>;
+pub type LanguageOptions = HashMap<String, String>;
 pub type ToWordsReturn = Result<String, ToWordsError>;
-pub type ToWordsClosure = dyn Fn(&str, &LanguageOptions) -> ToWordsReturn;
-
-pub type LanguageMap<'a> = HashMap<&'a str, Box<ToWordsClosure>>;
 
 lazy_static! {
 	static ref IS_NUMBER_REGEX: Regex =
 		Regex::new(r"^(-?\d+)(\.\d+)?$").unwrap();
 }
 
-pub struct ToWordsOptions<'a> {
-	pub language: &'a str,
+#[derive(Serialize, Deserialize)]
+pub struct ToWordsOptions {
+	pub language: String,
 }
 
+#[derive(Serialize, Deserialize)]
 pub enum ToWordsError {
 	NotANumber,
 	UnimplementedLanguage,
 }
 
-pub enum ToOrdinalError {
-	UnimplementedLanguage,
-}
-
-fn add_default_languages(languages: &mut LanguageMap) {
+fn add_default_languages(
+	languages: &mut HashMap<
+		String,
+		fn(String, &LanguageOptions) -> ToWordsReturn,
+	>,
+) {
 	if !languages.contains_key("en") {
-		languages.insert("en", Box::new(en::to_words));
+		languages.insert("en".to_string(), en::to_words);
 	}
 }
 
 pub fn to_words(
-	number: &str,
+	number: &String,
 	options: &ToWordsOptions,
 	language_options: &LanguageOptions,
-	languages: &mut HashMap<&str, Box<ToWordsClosure>>,
-) -> ToWordsReturn {
+	languages: &mut HashMap<
+		String,
+		fn(String, &LanguageOptions) -> ToWordsReturn,
+	>,
+) -> Result<String, ToWordsError> {
 	if !IS_NUMBER_REGEX.is_match(number) {
 		return Err(ToWordsError::NotANumber);
 	}
@@ -63,8 +68,8 @@ pub fn to_words(
 		parsed_number = format!("-{}", parsed_number);
 	}
 
-	match languages.get(options.language) {
-		Some(language) => (language)(&parsed_number, language_options),
+	match languages.get(&options.language) {
+		Some(language) => (language)(parsed_number, language_options),
 		None => Err(ToWordsError::UnimplementedLanguage),
 	}
 }

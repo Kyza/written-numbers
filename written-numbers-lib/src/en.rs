@@ -1,11 +1,15 @@
+use std::collections::HashMap;
+
 use lazy_static::lazy_static;
 use phf::phf_map;
 use regex::Regex;
 
 use crate::{
 	util::{chunk_number, map_has_value},
-	LanguageOptions, ToWordsReturn,
+	LanguageOptions, ToWordsError,
 };
+
+pub type ToWordsReturn = Result<String, ToWordsError>;
 
 pub static ONES: phf::Map<char, &'static str> = phf_map! {
 		'0' => "zero",
@@ -139,7 +143,11 @@ pub fn hundreds_word(
 		return result;
 	}
 
-	let joiner = if map_has_value(options, &"hundred_and", &"true") {
+	let joiner = if map_has_value(
+		options,
+		&"hundred_and".to_string(),
+		&"true".to_string(),
+	) {
 		" and"
 	} else {
 		""
@@ -322,7 +330,12 @@ pub fn illions_word(
 	format!("{} {}", hundreds_word(digits, options), illion_name(illion))
 }
 
-pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
+pub fn to_words<'a>(
+	number: String,
+	options: &LanguageOptions,
+) -> ToWordsReturn {
+	let number = number.as_str();
+
 	match number {
 		"0" => return Ok(ones_word('0')),
 		"-0" => return Ok(format!("negative {}", ones_word('0'))),
@@ -374,22 +387,29 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 		"{}{}",
 		// Prepend negative if needed.
 		if is_negative { "negative " } else { "" },
-		whole_words.join(if map_has_value(options, &"commas", &"true") {
-			", "
-		} else {
-			" "
-		})
+		whole_words.join(
+			if map_has_value(
+				options,
+				&"commas".to_string(),
+				&"true".to_string()
+			) {
+				", "
+			} else {
+				" "
+			}
+		)
 	);
 
 	// Handle decimal places.
 	let mut decimal_words: String = String::new();
 	if !decimals.is_empty() {
 		let mut decimal_options = options.clone();
-		decimal_options.insert("ordinal", "false");
+		decimal_options.insert("ordinal".to_string(), "false".to_string());
 
-		let decimal_words_result = to_words(&decimals, &decimal_options);
+		let decimal_words_result =
+			to_words(decimals.clone(), &decimal_options);
 		decimal_words = match decimal_words_result {
-			Ok(dw) => dw,
+			Ok(dw) => dw.to_string(),
 			Err(err) => {
 				return Err(err);
 			}
@@ -399,9 +419,9 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 			"1{}",
 			(0..decimals.len()).map(|_| "0").collect::<String>()
 		);
-		decimal_options.insert("ordinal", "true");
+		decimal_options.insert("ordinal".to_string(), "true".to_string());
 		let decimal_place_word_result =
-			to_words(&decimal_place, &decimal_options);
+			to_words(decimal_place, &decimal_options);
 		let decimal_place_word = match decimal_place_word_result {
 			Ok(dw) => dw.trim_start_matches("one ").to_owned(),
 			Err(err) => {
@@ -413,7 +433,7 @@ pub fn to_words(number: &str, options: &LanguageOptions) -> ToWordsReturn {
 	}
 
 	// let mut decimal_words = decimal_words_vec.join(" ");
-	if map_has_value(options, &"ordinal", &"true") {
+	if map_has_value(options, &"ordinal".to_string(), &"true".to_string()) {
 		whole_words = to_ordinal(&whole_words);
 	}
 
