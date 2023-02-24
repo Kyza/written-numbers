@@ -1,10 +1,8 @@
 extern crate wasm_bindgen;
-use std::collections::HashMap;
 
 use maplit::hashmap;
 use wasm_bindgen::prelude::*;
 
-use serde::{Deserialize, Serialize};
 use written_numbers::{LanguageOptions, ToWordsOptions};
 
 #[wasm_bindgen]
