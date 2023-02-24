@@ -5,16 +5,20 @@ export default init;
 // @ts-ignore
 export * from "./wasm";
 
+export type ValidNumber = string | bigint | number;
+export type Options = {
+	language: "en" | string;
+};
+export type LanguageOptions = Record<string, any>;
+
 export function toWords({
 	number,
 	options,
 	languageOptions,
 }: {
-	number: string | bigint | number;
-	options?: {
-		language: "en" | string;
-	};
-	languageOptions?: Record<string, any>;
+	number: ValidNumber;
+	options?: Options;
+	languageOptions?: LanguageOptions;
 }) {
 	number ??= "";
 	options ??= { language: "en" };
