@@ -23,7 +23,8 @@
 		"tool",
 		"javascript",
 		"typescript",
-		"rust"
+		"rust",
+		"wasm"
 	],
 	"author": "Kyza",
 	"license": "MIT",
