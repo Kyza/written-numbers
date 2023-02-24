@@ -1,8 +1,7 @@
-import initWrittenNumbers, { send_example_to_js, to_words } from "../pkg";
+import initWrittenNumbers, { to_words } from "../pkg";
 
 await initWrittenNumbers();
 
-window.send_example_to_js = send_example_to_js;
 window.to_words = to_words;
 
 function fact(n, r = 1n) {
@@ -14,3 +13,14 @@ function fact(n, r = 1n) {
 }
 
 window.fact = fact;
+
+const input = document.getElementById("input");
+const output = document.getElementById("output");
+
+input.addEventListener("input", () => {
+	output.textContent = to_words(
+		input.value,
+		{ language: "en" },
+		{ commas: "true" }
+	);
+});
