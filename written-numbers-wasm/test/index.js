@@ -21,6 +21,9 @@ input.addEventListener("input", () => {
 	output.textContent = to_words(
 		input.value,
 		{ language: "en" },
-		{ commas: "true" }
+		{
+			hundred_and: "true",
+			commas: "true",
+		}
 	);
 });
