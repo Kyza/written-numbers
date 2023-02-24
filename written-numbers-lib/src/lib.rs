@@ -10,6 +10,8 @@ pub mod util;
 
 pub type LanguageOptions = HashMap<String, String>;
 pub type ToWordsReturn = Result<String, ToWordsError>;
+pub type LanguagesMap =
+	HashMap<String, fn(&str, &LanguageOptions) -> ToWordsReturn>;
 
 lazy_static! {
 	static ref IS_NUMBER_REGEX: Regex =
@@ -27,12 +29,7 @@ pub enum ToWordsError {
 	UnimplementedLanguage,
 }
 
-fn add_default_languages(
-	languages: &mut HashMap<
-		String,
-		fn(&str, &LanguageOptions) -> ToWordsReturn,
-	>,
-) {
+fn add_default_languages(languages: &mut LanguagesMap) {
 	if !languages.contains_key("en") {
 		languages.insert("en".to_string(), en::to_words);
 	}
@@ -42,10 +39,7 @@ pub fn to_words(
 	number: &str,
 	options: &ToWordsOptions,
 	language_options: &LanguageOptions,
-	languages: &mut HashMap<
-		String,
-		fn(&str, &LanguageOptions) -> ToWordsReturn,
-	>,
+	languages: &mut LanguagesMap,
 ) -> Result<String, ToWordsError> {
 	if !IS_NUMBER_REGEX.is_match(number) {
 		return Err(ToWordsError::NotANumber);

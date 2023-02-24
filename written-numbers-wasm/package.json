@@ -1,9 +1,44 @@
 {
+	"name": "written-numbers",
+	"version": "1.0.0",
+	"description": "Convert numbers to their word counterparts.",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"default": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"type": "module",
+	"keywords": [
+		"words",
+		"word",
+		"numbers",
+		"number",
+		"number-to-words",
+		"converter",
+		"ordinal",
+		"string",
+		"tool",
+		"javascript",
+		"typescript",
+		"rust"
+	],
+	"author": "Kyza",
+	"license": "MIT",
 	"scripts": {
-		"build": "wasm-pack build --target web",
+		"build:rs": "wasm-pack build --target web --out-dir ./dist/wasm",
+		"build:ts": "tsc",
 		"dev": "vite ./test"
 	},
-	"dependencies": {
+	"devDependencies": {
 		"vite": "^4.1.4"
-	}
+	},
+	"files": [
+		"package.json",
+		"dist",
+		"LICENSE",
+		"tsconfig.json"
+	]
 }
