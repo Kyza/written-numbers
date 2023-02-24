@@ -60,8 +60,6 @@ pub fn to_words(
 	let language_options: LanguageOptions =
 		serde_wasm_bindgen::from_value(language_options).unwrap();
 
-	console_log!("{}", number);
-
 	let result = written_numbers::to_words(
 		&number.to_string(),
 		&options,
