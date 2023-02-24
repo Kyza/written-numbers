@@ -28,6 +28,7 @@
 	"author": "Kyza",
 	"license": "MIT",
 	"scripts": {
+		"build": "pnpm run build:rs & pnpm run build:ts",
 		"build:rs": "wasm-pack build --target web --out-dir ./dist/wasm",
 		"build:ts": "tsc",
 		"dev": "vite ./test"
