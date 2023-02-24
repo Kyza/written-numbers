@@ -30,7 +30,7 @@ pub enum ToWordsError {
 fn add_default_languages(
 	languages: &mut HashMap<
 		String,
-		fn(String, &LanguageOptions) -> ToWordsReturn,
+		fn(&str, &LanguageOptions) -> ToWordsReturn,
 	>,
 ) {
 	if !languages.contains_key("en") {
@@ -39,12 +39,12 @@ fn add_default_languages(
 }
 
 pub fn to_words(
-	number: &String,
+	number: &str,
 	options: &ToWordsOptions,
 	language_options: &LanguageOptions,
 	languages: &mut HashMap<
 		String,
-		fn(String, &LanguageOptions) -> ToWordsReturn,
+		fn(&str, &LanguageOptions) -> ToWordsReturn,
 	>,
 ) -> Result<String, ToWordsError> {
 	if !IS_NUMBER_REGEX.is_match(number) {
@@ -53,8 +53,10 @@ pub fn to_words(
 
 	add_default_languages(languages);
 
-	let mut parsed_number =
-		number.trim_start_matches('-').trim_matches('0').to_string();
+	let mut parsed_number = number
+		.trim_start_matches('-')
+		.trim_start_matches('0')
+		.to_string();
 	if parsed_number.ends_with('.') {
 		parsed_number.pop();
 	}
@@ -69,7 +71,7 @@ pub fn to_words(
 	}
 
 	match languages.get(&options.language) {
-		Some(language) => (language)(parsed_number, language_options),
+		Some(language) => (language)(&parsed_number, language_options),
 		None => Err(ToWordsError::UnimplementedLanguage),
 	}
 }

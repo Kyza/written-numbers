@@ -36,8 +36,22 @@ pub fn send_example_to_js() -> JsValue {
 }
 
 #[wasm_bindgen]
+extern "C" {
+	// Use `js_namespace` here to bind `console.log(..)` instead of just
+	// `log(..)`
+	#[wasm_bindgen(js_namespace = console)]
+	fn log(s: &str);
+}
+
+macro_rules! console_log {
+    // Note that this is using the `log` function imported above during
+    // `bare_bones`
+    ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
+}
+
+#[wasm_bindgen]
 pub fn to_words(
-	number: String,
+	number: &str,
 	options: JsValue,
 	language_options: JsValue,
 ) -> JsValue {
@@ -46,8 +60,10 @@ pub fn to_words(
 	let language_options: LanguageOptions =
 		serde_wasm_bindgen::from_value(language_options).unwrap();
 
+	console_log!("{}", number);
+
 	let result = written_numbers::to_words(
-		&number,
+		&number.to_string(),
 		&options,
 		&language_options,
 		&mut hashmap! {},

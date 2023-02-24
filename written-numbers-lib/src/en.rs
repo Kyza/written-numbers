@@ -331,10 +331,10 @@ pub fn illions_word(
 }
 
 pub fn to_words<'a>(
-	number: String,
+	number: &str,
 	options: &LanguageOptions,
 ) -> ToWordsReturn {
-	let number = number.as_str();
+	// let number = number.as_str();
 
 	match number {
 		"0" => return Ok(ones_word('0')),
@@ -406,8 +406,7 @@ pub fn to_words<'a>(
 		let mut decimal_options = options.clone();
 		decimal_options.insert("ordinal".to_string(), "false".to_string());
 
-		let decimal_words_result =
-			to_words(decimals.clone(), &decimal_options);
+		let decimal_words_result = to_words(&decimals, &decimal_options);
 		decimal_words = match decimal_words_result {
 			Ok(dw) => dw.to_string(),
 			Err(err) => {
@@ -421,7 +420,7 @@ pub fn to_words<'a>(
 		);
 		decimal_options.insert("ordinal".to_string(), "true".to_string());
 		let decimal_place_word_result =
-			to_words(decimal_place, &decimal_options);
+			to_words(&decimal_place, &decimal_options);
 		let decimal_place_word = match decimal_place_word_result {
 			Ok(dw) => dw.trim_start_matches("one ").to_owned(),
 			Err(err) => {

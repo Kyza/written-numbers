@@ -1,5 +1,6 @@
 {
 	"scripts": {
+		"build": "wasm-pack build --target web",
 		"dev": "vite ./test"
 	},
 	"dependencies": {
