@@ -32,7 +32,7 @@ export function toWords({
 	// @ts-ignore
 	console.log(processedLanguageOptions);
 
-	return to_words(number, options, processedLanguageOptions);
+	return to_words(number.toString(), options, processedLanguageOptions);
 }
 
 function snakeCase(str: string) {
