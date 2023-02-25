@@ -1,0 +1,3 @@
+[workspace]
+members = ["./written-numbers-lib", "./written-numbers-wasm"]
+resolver = "2"

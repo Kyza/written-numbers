@@ -4,7 +4,10 @@
 		"target": "ESNext",
 		"module": "ESNext",
 		"lib": ["ESNext"],
-		"declaration": true
+		"declaration": true,
+		"paths": {
+			"./wasm": ["./dist/wasm/written_numbers_wasm.js"]
+		}
 	},
 	"include": ["src"]
 }

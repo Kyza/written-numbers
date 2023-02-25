@@ -1,4 +1,5 @@
-*.txt
 node_modules
-.DS_Store
+target
+number*
+pkg
 dist
