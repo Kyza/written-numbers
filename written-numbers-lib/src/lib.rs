@@ -15,7 +15,7 @@ pub type LanguagesMap =
 
 lazy_static! {
 	static ref IS_NUMBER_REGEX: Regex =
-		Regex::new(r"^(-?\d+)(\.\d+)?$").unwrap();
+		Regex::new(r"^-?((\d+\.?)|(\.\d+)|(\d+\.\d+))?$").unwrap();
 }
 
 #[derive(Serialize, Deserialize)]
@@ -47,10 +47,8 @@ pub fn to_words(
 
 	add_default_languages(languages);
 
-	let mut parsed_number = number
-		.trim_start_matches('-')
-		.trim_start_matches('0')
-		.to_string();
+	let mut parsed_number =
+		number.trim_start_matches('-').trim_matches('0').to_string();
 	if parsed_number.ends_with('.') {
 		parsed_number.pop();
 	}

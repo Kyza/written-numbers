@@ -1,15 +1,9 @@
 {
 	"name": "written-numbers",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"description": "Convert numbers to their word counterparts.",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
-	"exports": {
-		".": {
-			"default": "./dist/index.js",
-			"types": "./dist/index.d.ts"
-		}
-	},
 	"type": "module",
 	"keywords": [
 		"words",
@@ -33,6 +27,10 @@
 		"build:rs": "wasm-pack build --target web --out-dir ./dist/wasm",
 		"build:ts": "tsc",
 		"dev": "vite ./test"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Kyza/written-numbers.git"
 	},
 	"devDependencies": {
 		"vite": "^4.1.4"
