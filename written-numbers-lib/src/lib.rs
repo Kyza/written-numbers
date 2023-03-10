@@ -47,11 +47,10 @@ pub fn to_words(
 
 	add_default_languages(languages);
 
-	let mut parsed_number =
-		number.trim_start_matches('-').trim_matches('0').to_string();
-	if parsed_number.ends_with('.') {
-		parsed_number.pop();
-	}
+	let mut parsed_number = number
+		.trim_start_matches('-')
+		.trim_start_matches('0')
+		.to_string();
 	if parsed_number.starts_with('.') {
 		parsed_number = format!("0{}", parsed_number);
 	}
@@ -60,6 +59,12 @@ pub fn to_words(
 	}
 	if number.starts_with('-') {
 		parsed_number = format!("-{}", parsed_number);
+	}
+	if parsed_number.contains('.') {
+		parsed_number = parsed_number.trim_end_matches('0').to_string();
+		if parsed_number.ends_with('.') {
+			parsed_number.pop();
+		}
 	}
 
 	match languages.get(&options.language) {

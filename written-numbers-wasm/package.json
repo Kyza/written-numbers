@@ -1,6 +1,6 @@
 {
 	"name": "written-numbers",
-	"version": "1.0.7",
+	"version": "1.0.8",
 	"description": "Convert numbers to their word counterparts.",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
