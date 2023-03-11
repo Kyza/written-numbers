@@ -2,6 +2,34 @@
 name = "written-numbers"
 version = "0.1.0"
 edition = "2021"
+authors = ["Kyza"]
+license = "MIT"
+homepage = "https://numbers.kyza.net/"
+repository = "https://github.com/Kyza/written-numbers"
+readme = "../README.md"
+keywords = [
+	"words",
+	"word",
+	"numbers",
+	"number",
+	"number-to-words",
+	"converter",
+	"ordinal",
+	"string",
+	"math",
+	"tool",
+	"javascript",
+	"typescript",
+	"rust",
+	"wasm",
+]
+categories = [
+	"text-processing",
+	"value-formatting",
+	"wasm",
+	"mathematics",
+	"internationalization",
+]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
