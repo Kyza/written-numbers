@@ -8,22 +8,7 @@ license = "MIT"
 homepage = "https://numbers.kyza.net/"
 repository = "https://github.com/Kyza/written-numbers"
 readme = "../README.md"
-keywords = [
-	"words",
-	"word",
-	"numbers",
-	"number",
-	"number-to-words",
-	"converter",
-	"ordinal",
-	"string",
-	"math",
-	"tool",
-	"javascript",
-	"typescript",
-	"rust",
-	"wasm",
-]
+keywords = ["words", "numbers", "converter", "math", "wasm"]
 categories = [
 	"text-processing",
 	"value-formatting",
