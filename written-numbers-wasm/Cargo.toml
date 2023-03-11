@@ -1,5 +1,6 @@
 [package]
 name = "written-numbers-wasm"
+description = "Convert numbers (1337) to words (one thousand three hundred thirty-seven)."
 version = "0.1.0"
 edition = "2021"
 authors = ["Kyza"]
