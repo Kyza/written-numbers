@@ -214,22 +214,51 @@ lazy_static! {
 	pub static ref ILLION_COMBINER_REGEX: Vec<Regex> = vec![
 		// Match for s.
 		Regex::new(pomsky! {
-			(((("1" | range "3"-"5" | "8") "0") | range "2"-"5") ["3" "6"] $) | (((["1" "8"] "0") | "8") "3" $)
+			(
+				(
+					(("1" | range "3"-"5" | "8") "0")
+					|
+					(range "2"-"5" | "8")
+				)
+				"3" $
+			) | (
+				(
+					(range "3"-"5" "0")
+					|
+					(range "2"-"5")
+				)
+				"6" $
+			)
 		})
 		.unwrap(),
 		// Match for x.
 		Regex::new(pomsky! {
-			((["1" "8"] "0") | "8") "6" $
+			(
+				(["1" "8"] "0")
+				|
+				"8"
+			)
+			"6" $
 		})
 		.unwrap(),
 		// Match for m.
 		Regex::new(pomsky! {
-			("80" | ["2" "8"]) ["7" "9"] $
+			(
+				"80"
+				|
+				["2" "8"]
+			)
+			["7" "9"] $
 		})
 		.unwrap(),
 		// Match for n.
 		Regex::new(pomsky! {
-			((range "1"-"7" "0") | ("1" | range "3"-"7")) ["7" "9"] $
+			(
+				(range "1"-"7" "0")
+				|
+				("1" | range "3"-"7")
+			)
+			["7" "9"] $
 		})
 		.unwrap(),
 	];

@@ -641,23 +641,6 @@ checksum = "447660ad36a13288b1db4d4248e857b510e8c3a225c822ba4fb748c0aafecffd"
 [[package]]
 name = "written-numbers"
 version = "0.1.2"
-dependencies = [
- "clap",
- "itoa",
- "lazy_static",
- "maplit",
- "peak_alloc",
- "phf",
- "pomsky-macro",
- "rand",
- "regex",
- "serde",
- "strum_macros",
-]
-
-[[package]]
-name = "written-numbers"
-version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1145b1d4640be61ad6403d862ac3512df5252bb0964516c901377584f0a98763"
 dependencies = [
@@ -675,8 +658,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "written-numbers"
+version = "0.1.3"
+dependencies = [
+ "clap",
+ "itoa",
+ "lazy_static",
+ "maplit",
+ "peak_alloc",
+ "phf",
+ "pomsky-macro",
+ "rand",
+ "regex",
+ "serde",
+ "strum_macros",
+]
+
+[[package]]
 name = "written-numbers-wasm"
-version = "0.1.0"
+version = "0.1.3"
 dependencies = [
  "getrandom",
  "js-sys",
@@ -687,5 +687,5 @@ dependencies = [
  "serde-wasm-bindgen",
  "strum_macros",
  "wasm-bindgen",
- "written-numbers 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "written-numbers 0.1.2",
 ]
