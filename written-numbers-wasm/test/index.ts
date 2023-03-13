@@ -22,11 +22,12 @@ input.addEventListener("input", () => {
 	output.textContent = toWords({
 		number: input.value,
 		options: {
-			language: "en",
+			language: "la",
 		},
 		languageOptions: {
-			hundredAnd: true,
-			commas: true,
+			// hundredAnd: true,
+			// commas: true,
 		},
 	});
+	console.log(output.textContent);
 });

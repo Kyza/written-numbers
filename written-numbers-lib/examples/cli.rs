@@ -55,11 +55,13 @@ fn main() {
 
 	let result = to_words(
 		&number,
-		&ToWordsOptions { language: "en" },
+		&ToWordsOptions {
+			language: args.language.to_string(),
+		},
 		&hashmap! {
-			"hundred_and" => if args.hundred_and {"true"} else {"false"},
-			"commas" => if args.commas {"true"} else {"false"},
-			"ordinal" => if args.ordinal {"true"} else {"false"},
+			"hundred_and".to_string() => (if args.hundred_and {"true"} else {"false"}).to_string(),
+			"commas".to_string() => (if args.commas {"true"} else {"false"}).to_string(),
+			"ordinal".to_string() => (if args.ordinal {"true"} else {"false"}).to_string(),
 		},
 		&mut hashmap! {},
 	);

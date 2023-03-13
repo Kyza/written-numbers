@@ -1,3 +1,4 @@
+use pomsky_macro::pomsky;
 use serde::{Deserialize, Serialize};
 
 use std::collections::HashMap;
@@ -5,7 +6,8 @@ use std::collections::HashMap;
 use lazy_static::lazy_static;
 use regex::Regex;
 
-pub mod en;
+pub mod english;
+pub mod latin;
 pub mod util;
 
 pub type LanguageOptions = HashMap<String, String>;
@@ -14,8 +16,10 @@ pub type LanguagesMap =
 	HashMap<String, fn(&str, &LanguageOptions) -> ToWordsReturn>;
 
 lazy_static! {
-	static ref IS_NUMBER_REGEX: Regex =
-		Regex::new(r"^-?((\d+\.?)|(\.\d+)|(\d+\.\d+))?$").unwrap();
+	static ref IS_NUMBER_REGEX: Regex = Regex::new(
+		pomsky! { ^ "-"? (([d]+ "."?) | ("." [d]+) | ([d]+ "." [d]+)) $ }
+	)
+	.unwrap();
 }
 
 #[derive(Serialize, Deserialize)]
@@ -31,7 +35,10 @@ pub enum ToWordsError {
 
 fn add_default_languages(languages: &mut LanguagesMap) {
 	if !languages.contains_key("en") {
-		languages.insert("en".to_string(), en::to_words);
+		languages.insert("en".to_string(), english::to_words);
+	}
+	if !languages.contains_key("la") {
+		languages.insert("la".to_string(), latin::to_words);
 	}
 }
 

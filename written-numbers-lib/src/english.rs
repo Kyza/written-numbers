@@ -1,5 +1,6 @@
 use lazy_static::lazy_static;
 use phf::phf_map;
+use pomsky_macro::pomsky;
 use regex::Regex;
 
 use crate::{
@@ -211,18 +212,36 @@ pub fn illion_parts(part_numbers: &[Vec<char>]) -> Vec<Vec<&'static str>> {
 
 lazy_static! {
 	pub static ref ILLION_COMBINER_REGEX: Vec<Regex> = vec![
-		Regex::new(r"([345]0|[2-5])[36]$").unwrap(),
-		Regex::new(r"([18]0|8)6$").unwrap(),
-		Regex::new(r"(80|[28])[79]$").unwrap(),
-		Regex::new(r"([1-7]0|[134567])[79]$").unwrap(),
+		// Match for s.
+		Regex::new(pomsky! {
+			((("1" | range "3"-"5" | "8") "0") | range "2"-"5") ["3" "6"] $
+		})
+		.unwrap(),
+		// Match for x.
+		Regex::new(pomsky! {
+			((["1" "8"] "0") | "8") "6" $
+		})
+		.unwrap(),
+		// Match for m.
+		Regex::new(pomsky! {
+			("80" | ["2" "8"]) ["7" "9"] $
+		})
+		.unwrap(),
+		// Match for n.
+		Regex::new(pomsky! {
+			((range "1"-"7" "0") | ("1" | range "3"-"7")) ["7" "9"] $
+		})
+		.unwrap(),
 	];
 }
 
 lazy_static! {
 	pub static ref ILLION_COMBINER_CHARS: Vec<char> =
 		vec!['s', 'x', 'm', 'n'];
-	pub static ref ONLY_ONES_ILLIONS_REGEX: Regex =
-		Regex::new(r"^00[1-9]$").unwrap();
+	pub static ref ONLY_ONES_ILLIONS_REGEX: Regex = Regex::new(pomsky! {
+		^ "00" range "1"-"9" $
+	})
+	.unwrap();
 }
 
 pub fn combine_illion_parts(

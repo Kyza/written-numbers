@@ -7,7 +7,7 @@ export * from "./wasm";
 
 export type ValidNumber = string | bigint | number;
 export type Options = {
-	language: "en" | string;
+	language: "en" | "la" | string;
 };
 export type LanguageOptions = Record<string, any>;
 
