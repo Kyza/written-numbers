@@ -214,7 +214,7 @@ lazy_static! {
 	pub static ref ILLION_COMBINER_REGEX: Vec<Regex> = vec![
 		// Match for s.
 		Regex::new(pomsky! {
-			((("1" | range "3"-"5" | "8") "0") | range "2"-"5") ["3" "6"] $
+			(((("1" | range "3"-"5" | "8") "0") | range "2"-"5") ["3" "6"] $) | (((["1" "8"] "0") | "8") "3" $)
 		})
 		.unwrap(),
 		// Match for x.
